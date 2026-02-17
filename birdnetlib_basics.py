@@ -7,7 +7,7 @@ import datetime
 
 #ff.input("notepad++ situation is crazy.webm").output("notepad.wav").run()
 
-
+file_path = "DS4020-Birds\DMWW-EXP_0+1_20200411_062600.wav"
 
 start = time.perf_counter()
 
@@ -18,7 +18,7 @@ try:
 
     recording = Recording(
         analyzer,
-        "clean_STRIPS2_0+1_20150520_053500.wav",
+        file_path,
         min_conf=0.80,
         lat = 42.0347,
         lon = -93.6199,
@@ -29,7 +29,7 @@ try:
     end1 = time.perf_counter()
     print(f"Analysis complete: {end1-analyzer_start}")
 
-    with open("clean_STRIPS2_0+1_20150520_053500.json", "w") as file:
+    with open(file_path.replace(".wav", ".json"), "w") as file:
         json.dump(recording.detections, file, indent = 4)
 
 finally:
