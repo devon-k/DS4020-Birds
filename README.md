@@ -19,5 +19,5 @@
    * librosa
    * tesorflow
    * resampy
-   * birndnetlib
+   * birdnetlib
 6. Run birdnetlib_basics.py
