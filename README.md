@@ -1,6 +1,6 @@
 # DS4020-Birds
 
-Pipeline Rough Draft Outline
+## Pipeline Rough Draft Outline
 1. Copy audio files from lss to inputs directory
 2. Run audio files through bird net
     * Store outputs in output directory
