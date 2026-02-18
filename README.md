@@ -11,8 +11,13 @@ Pipeline Rough Draft Outline
     * other analyzations of data
 
 ## Set up Intructions
-Clone GitHub
-Add input and outut folders
-Copy .wav file into inputs folder
-Change file name in birdnet_basics.py
-Run birdnet_basics.py
+1. Clone GitHub
+2. Add input and outut folders
+3. Copy .wav file into inputs folder
+4. Change file name in birdnetlib_basics.py
+5. Install Libraries
+   * librosa
+   * tesorflow
+   * resampy
+   * birndnetlib
+6. Run birdnetlib_basics.py
