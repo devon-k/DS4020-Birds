@@ -50,4 +50,5 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
                 copy(path, DESTINATION)
 
 if __name__ == "__main__":
-    copy_bird_audio(file_paths, num_files=1)    file_paths = get_bird_file_paths("z://")
+    file_paths = get_bird_file_paths("z://")
+    copy_bird_audio(file_paths, num_files=1)
