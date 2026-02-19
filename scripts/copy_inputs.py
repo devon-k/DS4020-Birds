@@ -31,6 +31,11 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
     """
 
     #TODO - Add necessary information to filenames OR export an index which contains it.
+    #TODO - Add error handling
+
+    # Create destination if it doesn't exist
+    if not destination.is_file():
+        destination.mkdir()
 
     # Handle single paths/strings
     if type(paths) == Path or type(paths) == str:
