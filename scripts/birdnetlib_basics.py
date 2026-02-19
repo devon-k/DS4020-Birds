@@ -49,6 +49,10 @@ try:
         end1 = time.perf_counter()
         print(f"Analysis complete: {end1-analyzer_start}")
 
+        # Delete the audio file after processing
+        os.remove(file_path)
+        print(f"Deleted: {filename}")
+
         # Generate output path based on input filename
         out_path = os.path.join(OUTPUTS_DIR, os.path.splitext(filename)[0] + ".csv")
         
