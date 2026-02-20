@@ -5,7 +5,8 @@ ROOT = Path("z://").resolve() # This string needs to be the address of the lschu
 SCRIPT_DIR = Path(__file__).absolute().parent.parent
 DESTINATION = SCRIPT_DIR / "inputs"
 
-def get_bird_file_paths(root_directory = ROOT):
+def get_bird_file_paths(root_directory = ROOT, location : str = None, location_type : str = None, 
+                        year : int = None, month : int = None, day : int = None ):
     """ Produces a generator (stream) of paths which contains all 
     the files inside the location-coded folders of the ARU_data.
 
@@ -20,7 +21,13 @@ def get_bird_file_paths(root_directory = ROOT):
         root_directory = Path(root_directory).resolve()
 
     lab_directory = root_directory / "ARU_data"
-    return lab_directory.glob("???/*/*")
+
+    glob_string = ""
+    glob_string += (location if location != None else "???") + "/"
+    glob_string += (f"*{location_type}*" if location_type != None else "*") + "/"
+    glob_string += f"*{year or "????"}{month or "??"}{day or "??"}*"
+
+    return lab_directory.glob(glob_string) #"???/*/*"
 
 #TODO - Add filtering options, maybe random selection.
 
@@ -32,7 +39,6 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
     """
 
     #TODO - Add necessary information to filenames OR export an index which contains it.
-    #TODO - Add error handling
 
     # Create destination if it doesn't exist
     if not destination.is_dir():
@@ -50,7 +56,7 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
                 import traceback
                 traceback.print_exc()
         else:
-            print(f"Skipping {str(path)}")
+            print(f"Skipping {str(path)}, not a compatible audio file.")
 
     # Handle collections/generators
     else:
@@ -71,7 +77,7 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
                     traceback.print_exc()
                     
             else:
-                print(f"Skipping {str(path)}")
+                print(f"Skipping {str(path)}, not a compatible audio file.")
 
 if __name__ == "__main__":
     file_paths = get_bird_file_paths()
