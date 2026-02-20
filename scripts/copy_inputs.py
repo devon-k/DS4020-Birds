@@ -49,7 +49,18 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
         if ".wav" in str(path) or ".flac" in str(path):
             print(f"Copying {str(path)}")
             try:
-                copy(path, destination)
+                split_path = str(path).split("/")
+                file_type = "." + split_path[-1].split(".")[-1]
+                location = split_path[-3]
+                location_type = split_path[-2].split("_")[1]
+                date = split_path[-1].split("_")[-2]
+                year = split_path[-1].split("_")[-2][0:4]
+                month = split_path[-1].split("_")[-2][4:6]
+                day = split_path[-1].split("_")[-2][6:8]
+
+                new_file_name = location + "_" + location_type + "_" + date + file_type
+
+                copy(path, destination + "/" + new_file_name)
             except Exception as e:
                 print(f"Ran into a problem copying {str(path)}")
                 print(e)
@@ -68,7 +79,19 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
             if ".wav" in str(path) or ".flac" in str(path):
                 print(f"Copying {str(path)}")
                 try:
-                    copy(path, destination)
+                    split_path = str(path).split("\\")
+                    file_type = "." + split_path[-1].split(".")[-1]
+                    location = split_path[-3]
+                    location_type = split_path[-2].split("_")[1].split("-")[0]
+                    date = split_path[-1].split("_")[-2]
+                    year = split_path[-1].split("_")[-2][0:4]
+                    month = split_path[-1].split("_")[-2][4:6]
+                    day = split_path[-1].split("_")[-2][6:8]
+
+                    new_file_name = location + "_" + location_type + "_" + date + file_type
+
+                    copy(path, destination / new_file_name)
+
                     i += 1
                 except Exception as e:
                     print(f"Ran into a problem copying {str(path)}")
