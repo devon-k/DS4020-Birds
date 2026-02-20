@@ -44,11 +44,17 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
             copy(path, DESTINATION)
     # Handle collections/generators
     else:
-        for i, path in enumerate(paths):
+        i = 0
+        for path in paths:
             if i == num_files:
                 break
+
             if ".wav" in str(path) or ".flac" in str(path):
+                print(f"Copying {str(path)}")
                 copy(path, DESTINATION)
+                i += 1
+            else:
+                print(f"Skipping {str(path)}")
 
 if __name__ == "__main__":
     file_paths = get_bird_file_paths("z://")
