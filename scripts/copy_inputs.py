@@ -2,7 +2,8 @@ from pathlib import Path
 from shutil import copy
 
 ROOT = Path("z://").resolve()
-DESTINATION = Path("inputs")
+SCRIPT_DIR = Path(__file__).absolute().parent.parent
+DESTINATION = SCRIPT_DIR / "inputs"
 
 def get_bird_file_paths(root_directory = ROOT):
     """ Produces a generator (stream) of paths which contains all 
