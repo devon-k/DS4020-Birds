@@ -1,7 +1,7 @@
 from pathlib import Path
 from shutil import copy
 
-ROOT = Path("z://").resolve()
+ROOT = Path("z://").resolve() # This string needs to be the address of the lschulte-lab directory
 SCRIPT_DIR = Path(__file__).absolute().parent.parent
 DESTINATION = SCRIPT_DIR / "inputs"
 
@@ -57,5 +57,5 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
                 print(f"Skipping {str(path)}")
 
 if __name__ == "__main__":
-    file_paths = get_bird_file_paths("z://")
-    copy_bird_audio(file_paths, num_files=1)
+    file_paths = get_bird_file_paths()
+    copy_bird_audio(file_paths, num_files=10)
