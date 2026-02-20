@@ -10,7 +10,7 @@ def get_bird_file_paths(root_directory = ROOT):
 
     Just needs the path to the network folder containing the data.
 
-    The generator currently includes a small number (361) files which aren't audio..
+    The generator currently includes a small number of files (361) which aren't audio.
     I don't think there is a good way around that so it has to be handled by the client taking accepting the generator.
     """
 
@@ -34,7 +34,7 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
     #TODO - Add error handling
 
     # Create destination if it doesn't exist
-    if not destination.is_file():
+    if not destination.is_dir():
         destination.mkdir()
 
     # Handle single paths/strings
