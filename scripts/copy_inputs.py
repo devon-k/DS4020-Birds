@@ -22,6 +22,16 @@ def get_bird_file_paths(root_directory = ROOT):
     lab_directory = root_directory / "ARU_data"
     return lab_directory.glob("???/*/*")
 
+def _handle_copy(path, destination):
+    try:
+        copy(path, destination)
+        i += 1
+    except Exception as e:
+        print(f"Ran into a problem copying {str(path)}")
+        print(e)
+        import traceback
+        traceback.print_exc()
+
 #TODO - Add filtering options, maybe random selection.
 
 def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
@@ -41,7 +51,11 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
     # Handle single paths/strings
     if type(paths) == Path or type(paths) == str:
         if ".wav" in str(path) or ".flac" in str(path):
-            copy(path, DESTINATION)
+            print(f"Copying {str(path)}")
+            _handle_copy(path, destination)
+        else:
+            print(f"Skipping {str(path)}")
+ 
     # Handle collections/generators
     else:
         i = 0
@@ -51,8 +65,8 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
 
             if ".wav" in str(path) or ".flac" in str(path):
                 print(f"Copying {str(path)}")
-                copy(path, DESTINATION)
-                i += 1
+                _handle_copy(path, destination)
+                    
             else:
                 print(f"Skipping {str(path)}")
 
