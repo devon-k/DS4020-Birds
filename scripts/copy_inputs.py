@@ -10,10 +10,11 @@ def get_bird_file_paths(root_directory = ROOT, location : str = None, location_t
     """ Produces a generator (stream) of paths which contains all 
     the files inside the location-coded folders of the ARU_data.
 
-    Just needs the path to the network folder containing the data.
+    root_directory must be the path/address to the lshulte-lab directory.
 
     The generator currently includes a small number of files (361) which aren't audio.
-    I don't think there is a good way around that so it has to be handled by the client taking accepting the generator.
+    I don't think there is a good way around that so it has to be handled by the client 
+    taking accepting the generator.
     """
 
     # Takes either a string or path, needs to convert str to path.
@@ -29,16 +30,18 @@ def get_bird_file_paths(root_directory = ROOT, location : str = None, location_t
 
     return lab_directory.glob(glob_string) #"???/*/*"
 
-#TODO - Add filtering options, maybe random selection.
-
 def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
     """ Copies a number of files from a collection of paths to a destination folder.
 
     paths can be a path, string, generator, or collection.
+    
     Collects all files if num_files is set to -1.
-    """
 
-    #TODO - Add necessary information to filenames OR export an index which contains it.
+    Filetames are changed to reflect their identifying values:
+    [location]_[location_type]_[yyyymmdd][filetype]
+
+    ex: ARM_CTL_20180301.wav
+    """
 
     # Create destination if it doesn't exist
     if not destination.is_dir():
