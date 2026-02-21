@@ -1,5 +1,6 @@
 from birdnetlib import Recording
 from birdnetlib.analyzer import Analyzer
+from ARU_DataHelper import ARUDataHelper
 import csv
 import time
 import datetime
@@ -34,15 +35,18 @@ try:
         analyzer_start = time.perf_counter()
         print(f"\nProcessing: {filename}")
 
+        dataHelper = ARUDataHelper()
+        dataHelper.input_formatted_filename(filename)
+
         #TODO - get longitude and latitude from file
-        #TODO - get date from file
+
         recording = Recording(
             analyzer,
             file_path,
             min_conf=0.10,
             lat=42.0347,
             lon=-93.6199,
-            date=datetime.datetime(year=2015, month=5, day=20),
+            date= dataHelper.to_datetime(),
         )
 
         recording.analyze()
