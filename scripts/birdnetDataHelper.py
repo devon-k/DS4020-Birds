@@ -16,7 +16,8 @@ class BirdnetDataHelper():
 
     def input_lab_path(self, path):
         """
-        Takes a path for an ARU birds audio file and returns a dict of values.
+        Takes a path for an ARU birds audio file to load the dataHelper.
+
         * location
         * location_type
         * date
@@ -44,7 +45,7 @@ class BirdnetDataHelper():
 
     def input_formatted_filename(self, filename):
         """
-        Takes a path for an ARU birds audio file and returns a dict of values.
+        Takes a formatted filename for an ARU birds audio file to load the dataHelper.
         * location
         * location_type
         * date
@@ -67,18 +68,28 @@ class BirdnetDataHelper():
         self.month = self.date[4:6]
         self.day = self.date[6:8]
 
-        self.to_lab_path()
-
     def to_formatted_filename(self):
         if self.file_type == None:
-            raise Exception("BirdnetDataHelper is missing required data or is empty.")
+            raise Exception("Cannot create formatted filename, BirdnetDataHelper is missing required data or is empty.")
 
         self.formatted_filename = self.location + "_" + self.location_type + "_" + self.date + self.file_type
         return self.formatted_filename
 
-    def to_lab_path(self, root_directory : Path):
+    def to_lab_path(self, root_directory):
+        """
+        Performs a search to find the path to the original location of a file with a formatted filename.
+
+        Requires the local lshulte-lab root directory to do perform the search.
+
+        Docstring for to_lab_path
+        
+        :param self: Description
+        :param root_directory: Description
+        :type root_directory: Path
+        """
+
         if self.file_type == None:
-            raise Exception("BirdnetDataHelper is missing required data or is empty.")
+            raise Exception("Cannot find lab_path, BirdnetDataHelper is missing required data or is empty.")
         
         if type(root_directory) == str:
             root_directory = Path(root_directory).resolve()
