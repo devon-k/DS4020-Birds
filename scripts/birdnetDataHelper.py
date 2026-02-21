@@ -84,7 +84,7 @@ class BirdnetDataHelper():
         Docstring for to_lab_path
         
         :param self: Description
-        :param root_directory: Description
+        :param root_directory: The path or address to the lshulte-lab directory.
         :type root_directory: Path
         """
 

@@ -7,7 +7,7 @@ SCRIPT_DIR = Path(__file__).absolute().parent.parent
 DESTINATION = SCRIPT_DIR / "inputs"
 
 def get_bird_file_paths(root_directory = ROOT, location : str = None, location_type : str = None, 
-                        year : int = None, month : int = None, day : int = None ):
+                        year : int = None, month : int = None, day : int = None, file_type = None ):
     """ Produces a generator (stream) of paths which contains all 
     the files inside the location-coded folders of the ARU_data.
 
@@ -25,9 +25,10 @@ def get_bird_file_paths(root_directory = ROOT, location : str = None, location_t
     lab_directory = root_directory / "ARU_data"
 
     glob_string = ""
-    glob_string += (location if location != None else "???") + "/"
+    glob_string += (location or "???") + "/"
     glob_string += (f"*{location_type}*" if location_type != None else "*") + "/"
-    glob_string += f"*{year or "????"}{month or "??"}{day or "??"}*"
+    glob_string += f"*_{year or "????"}{month or "??"}{day or "??"}_*"
+    glob_string += f"{file_type or ".*"}"
 
     return lab_directory.glob(glob_string) #"???/*/*"
 
@@ -56,7 +57,7 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
                 data_helper = BirdnetDataHelper()
                 data_helper.input_lab_path(paths)
                 new_file_name = data_helper.to_formatted_filename()
-                
+
                 copy(paths, destination + "/" + new_file_name)
             except Exception as e:
                 print(f"Ran into a problem copying {str(paths)}")
