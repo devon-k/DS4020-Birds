@@ -7,7 +7,7 @@ SCRIPT_DIR = Path(__file__).absolute().parent.parent
 DESTINATION = SCRIPT_DIR / "inputs"
 
 def get_bird_file_paths(root_directory = ROOT, location : str = None, location_type : str = None, 
-                        year : int = None, month : int = None, day : int = None, file_type = None ):
+                        year = None, month = None, day : int = None, file_type = None ):
     """ Produces a generator (stream) of paths which contains all 
     the files inside the location-coded folders of the ARU_data.
 
@@ -23,6 +23,19 @@ def get_bird_file_paths(root_directory = ROOT, location : str = None, location_t
         root_directory = Path(root_directory).resolve()
 
     lab_directory = root_directory / "ARU_data"
+
+    if month and type(month) == str:
+        try: int(month)
+        except:
+            month = {"jan" : 1, "feb" : 2, "mar" : 3, "apr" : 4, "may" : 5, "jun" : 6, "jul" : 7, "aug" : 8, "sep" : 9, "oct" : 10, "nov" : 11, "dec" : 12,
+                     "january" : 1, "febrary" : 2, "march" : 3, "april" : 4, "june" : 6, "july": 7, "august" : 8, "september" : 9, "octeber" : 10, "november" : 11, "december" : 12
+                     }[month.lower()]
+
+    if month and int(month) < 10:
+        month = "0" + str(int(month))
+
+    if day and int(day) < 10:
+        day = "0" + str(int(day))
 
     glob_string = ""
     glob_string += (location or "???") + "/"
