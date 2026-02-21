@@ -49,28 +49,21 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
 
     # Handle single paths/strings
     if type(paths) == Path or type(paths) == str:
-        if ".wav" in str(path) or ".flac" in str(path):
-            print(f"Copying {str(path)}")
+        if ".wav" in str(paths) or ".flac" in str(paths):
+            print(f"Copying {str(paths)}")
             try:
-                split_path = str(path).split("/")
-                file_type = "." + split_path[-1].split(".")[-1]
-                location = split_path[-3]
-                location_type = split_path[-2].split("_")[1]
-                date = split_path[-1].split("_")[-2]
-                year = split_path[-1].split("_")[-2][0:4]
-                month = split_path[-1].split("_")[-2][4:6]
-                day = split_path[-1].split("_")[-2][6:8]
-
-                new_file_name = location + "_" + location_type + "_" + date + file_type
-
-                copy(path, destination + "/" + new_file_name)
+                data_helper = BirdnetDataHelper()
+                data_helper.input_lab_path(paths)
+                new_file_name = data_helper.to_formatted_filename()
+                
+                copy(paths, destination + "/" + new_file_name)
             except Exception as e:
-                print(f"Ran into a problem copying {str(path)}")
+                print(f"Ran into a problem copying {str(paths)}")
                 print(e)
                 import traceback
                 traceback.print_exc()
         else:
-            print(f"Skipping {str(path)}, not a compatible audio file.")
+            print(f"Skipping {str(paths)}, not a compatible audio file.")
 
     # Handle collections/generators
     else:
@@ -82,17 +75,9 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
             if ".wav" in str(path) or ".flac" in str(path):
                 print(f"Copying {str(path)}")
                 try:
-                    split_path = str(path).split("\\")
-                    file_type = "." + split_path[-1].split(".")[-1]
-                    location = split_path[-3]
-                    location_type = split_path[-2].split("_")[1].split("-")[0]
-                    date = split_path[-1].split("_")[-2]
-                    year = split_path[-1].split("_")[-2][0:4]
-                    month = split_path[-1].split("_")[-2][4:6]
-                    day = split_path[-1].split("_")[-2][6:8]
-
-                    new_file_name = location + "_" + location_type + "_" + date + file_type
-
+                    data_helper = BirdnetDataHelper()
+                    data_helper.input_lab_path(path)
+                    new_file_name = data_helper.to_formatted_filename()
                     copy(path, destination / new_file_name)
 
                     i += 1
