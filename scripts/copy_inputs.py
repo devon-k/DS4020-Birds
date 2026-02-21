@@ -1,6 +1,6 @@
 from pathlib import Path
 from shutil import copy
-from birdnetDataHelper import BirdnetDataHelper
+from scripts.ARU_DataHelper import BirdnetDataHelper
 
 ROOT = Path("z://").resolve() # This string needs to be the address of the lschulte-lab directory
 SCRIPT_DIR = Path(__file__).absolute().parent.parent
