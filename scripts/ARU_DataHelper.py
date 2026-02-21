@@ -1,6 +1,7 @@
 from pathlib import Path
+from datetime import datetime
 
-class BirdnetDataHelper():
+class ARUDataHelper():
         
     def __init__(self):
         self.lab_path = None
@@ -68,6 +69,8 @@ class BirdnetDataHelper():
         self.month = self.date[4:6]
         self.day = self.date[6:8]
 
+        self.lab_path = None
+
     def to_formatted_filename(self):
         if self.file_type == None:
             raise Exception("Cannot create formatted filename, BirdnetDataHelper is missing required data or is empty.")
@@ -112,3 +115,6 @@ class BirdnetDataHelper():
         else:
             print("Many possibilities found")
             return possible_paths
+        
+    def to_datetime(self):
+        return datetime(year = int(self.year), month = int(self.month), day = int(self.day))

@@ -1,6 +1,6 @@
 from pathlib import Path
 from shutil import copy
-from scripts.ARU_DataHelper import BirdnetDataHelper
+from scripts.ARU_DataHelper import ARUDataHelper
 
 ROOT = Path("z://").resolve() # This string needs to be the address of the lschulte-lab directory
 SCRIPT_DIR = Path(__file__).absolute().parent.parent
@@ -67,7 +67,7 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
         if ".wav" in str(paths) or ".flac" in str(paths):
             print(f"Copying {str(paths)}")
             try:
-                data_helper = BirdnetDataHelper()
+                data_helper = ARUDataHelper()
                 data_helper.input_lab_path(paths)
                 new_file_name = data_helper.to_formatted_filename()
 
@@ -90,7 +90,7 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
             if ".wav" in str(path) or ".flac" in str(path):
                 print(f"Copying {str(path)}")
                 try:
-                    data_helper = BirdnetDataHelper()
+                    data_helper = ARUDataHelper()
                     data_helper.input_lab_path(path)
                     new_file_name = data_helper.to_formatted_filename()
                     copy(path, destination / new_file_name)
