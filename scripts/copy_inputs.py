@@ -1,6 +1,6 @@
 from pathlib import Path
 from shutil import copy
-from scripts.ARU_DataHelper import ARUDataHelper
+from ARU_DataHelper import ARUDataHelper
 
 ROOT = Path("z://").resolve() # This string needs to be the address of the lschulte-lab directory
 SCRIPT_DIR = Path(__file__).absolute().parent.parent
