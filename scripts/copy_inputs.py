@@ -20,7 +20,7 @@ def get_bird_file_paths(root_directory = ROOT, location : str = None, location_t
 
     # Takes either a string or path, needs to convert str to path.
     if type(root_directory) == str:
-        root_directory = Path(root_directory).resolve()
+       root_directory = Path(root_directory).resolve()
 
     lab_directory = root_directory / "ARU_data"
 
@@ -45,7 +45,7 @@ def get_bird_file_paths(root_directory = ROOT, location : str = None, location_t
 
     return lab_directory.glob(glob_string) #"???/*/*"
 
-def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
+def copy_bird_audio(paths, destination = DESTINATION, num_files = -10):
     """ Copies a number of files from a collection of paths to a destination folder.
 
     paths can be a path, string, generator, or collection.
