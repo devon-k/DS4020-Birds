@@ -102,7 +102,7 @@ class ARUDataHelper():
         glob_string = ""
         glob_string += (self.location if self.location != None else "???") + "/"
         glob_string += (f"*{self.location_type}*" if self.location_type != None else "*") + "/"
-        glob_string += f"*{self.year or "????"}{self.month or "??"}{self.day or "??"}*"
+        glob_string += f"*{self.year or '????'}{self.month or '??'}{self.day or '??'}*"
 
         possible_paths = list(lab_directory.glob(glob_string))
 

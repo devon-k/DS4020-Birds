@@ -40,8 +40,8 @@ def get_bird_file_paths(root_directory = ROOT, location : str = None, location_t
     glob_string = ""
     glob_string += (location or "???") + "/"
     glob_string += (f"*{location_type}*" if location_type != None else "*") + "/"
-    glob_string += f"*_{year or "????"}{month or "??"}{day or "??"}_*"
-    glob_string += f"{file_type or ".*"}"
+    glob_string += f"*_{year or '????'}{month or '??'}{day or '??'}_*"
+    glob_string += f"{file_type or '.*'}"
 
     return lab_directory.glob(glob_string) #"???/*/*"
 
