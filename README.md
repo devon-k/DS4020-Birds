@@ -12,7 +12,7 @@
 
 ## Set up Intructions
 1. Clone GitHub
-3. Rename "config.py.template" as "config.py"
+3. Make a copy of "config.py.template" as "config.py"
 5. Install Libraries
    * librosa
    * tesorflow
