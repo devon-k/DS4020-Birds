@@ -12,8 +12,7 @@
 
 ## Set up Intructions
 1. Clone GitHub
-3. Copy .wav file into inputs folder
-4. Change file name in birdnetlib_basics.py
+3. Rename "config.py.template" as "config.py"
 5. Install Libraries
    * librosa
    * tesorflow
