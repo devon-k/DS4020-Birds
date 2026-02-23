@@ -3,8 +3,8 @@ from birdnetlib.analyzer import Analyzer
 from ARU_DataHelper import ARUDataHelper
 import csv
 import time
-import datetime
 import os
+import config
 
 # Paths relative to this script file
 SCRIPT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -43,7 +43,7 @@ try:
         recording = Recording(
             analyzer,
             file_path,
-            min_conf=0.10,
+            min_conf=config.MIN_CONFIDENCE,
             lat=42.0347,
             lon=-93.6199,
             date= dataHelper.to_datetime(),
