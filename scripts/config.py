@@ -1,1 +1,2 @@
 LAB_DIRECTORY = "z://"
+MIN_CONFIDENCE = 0.5
