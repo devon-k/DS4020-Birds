@@ -3,3 +3,4 @@
 *.csv
 *.flac
 *\__pycache__
+*\compiled
