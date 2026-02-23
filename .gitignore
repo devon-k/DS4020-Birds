@@ -4,4 +4,4 @@
 *.flac
 *\__pycache__
 *\compiled
-*config.py
+*\config.py
