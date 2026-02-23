@@ -12,12 +12,11 @@
 
 ## Set up Intructions
 1. Clone GitHub
-2. Add input and outut folders
-3. Copy .wav file into inputs folder
-4. Change file name in birdnetlib_basics.py
+3. Rename "config.py.template" as "config.py"
 5. Install Libraries
    * librosa
    * tesorflow
    * resampy
    * birdnetlib
-6. Run birdnetlib_basics.py
+   * pandas
+6. Run copy_inputs.py, birdnetlib_basics.py, then consolidate_outputs.py

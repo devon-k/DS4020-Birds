@@ -1,5 +1,6 @@
 from pathlib import Path
 import pandas as pd
+import config
 
 from ARU_DataHelper import ARUDataHelper
 
@@ -7,7 +8,7 @@ from ARU_DataHelper import ARUDataHelper
 def consolidate_outputs(
     outputs_dir: Path,
     compiled_dir: Path,
-    min_confidence: float = 0.0
+    min_confidence: float = config.MIN_CONFIDENCE
 ):
     """
     Consolidate BirdNET output CSV files into a single master dataset.
@@ -84,5 +85,5 @@ if __name__ == "__main__":
     consolidate_outputs(
         outputs_dir=BASE_DIR / "outputs",
         compiled_dir=BASE_DIR / "compiled",
-        min_confidence=0.5
+        min_confidence=config.MIN_CONFIDENCE
     )
