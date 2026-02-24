@@ -5,6 +5,7 @@ import csv
 import time
 import os
 import config
+import multiprocessing
 
 # Paths relative to this script file
 SCRIPT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -64,28 +65,35 @@ def write_detections_to_csv(recording, filename):
                 else:
                     print("No detections found.")
 
+def process_file(filename):
+    try:
+        recording = AnalyzeRecording(filename)
+        #deleteAudioFile(filename)
+        write_detections_to_csv(recording, filename)
+    except Exception as e:
+        print(f"Error processing {filename}: {e}")
+        import traceback
+        traceback.print_exc()
+
 def runBirdNet():
     os.makedirs(OUTPUTS_DIR, exist_ok=True)
 
     start = time.perf_counter()
 
     try:
-        # Loop through all files in the inputs directory
-        for filename in os.listdir(INPUTS_DIR):
-            file_path = os.path.join(INPUTS_DIR, filename)
-            
-            # Skip directories, only process audio files
-            if not os.path.isfile(file_path):
-                continue
-            
-            if os.path.splitext(filename)[1].lower() not in AUDIO_EXTENSIONS:
-                continue
-            
-            recording = AnalyzeRecording(filename)
+        # Get list of audio files
+        files = [f for f in os.listdir(INPUTS_DIR) if os.path.isfile(os.path.join(INPUTS_DIR, f)) and os.path.splitext(f)[1].lower() in AUDIO_EXTENSIONS]
+        
+        if not files:
+            print("No audio files found in inputs directory.")
+            return
 
-            deleteAudioFile(file_path)
-
-            write_detections_to_csv(recording, filename)
+        # Use multiprocessing to process files in parallel
+        num_processes = min(multiprocessing.cpu_count(), len(files))  # Use available CPUs or number of files
+        print(f"Processing {len(files)} files using {num_processes} processes.")
+        
+        with multiprocessing.Pool(processes=num_processes) as pool:
+            pool.map(process_file, files)
 
     except Exception as e:
         print(f"Error: {e}")
