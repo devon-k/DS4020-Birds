@@ -14,7 +14,8 @@ OUTPUTS_DIR = os.path.join(SCRIPT_DIR, "outputs")
 # Audio file extensions to process
 AUDIO_EXTENSIONS = {'.wav', '.flac'}
 
-def AnalyzeRecording(filename, file_path):
+def AnalyzeRecording(filename):
+            file_path = os.path.join(INPUTS_DIR, filename)
             analyzer = Analyzer()
             analyzer_start = time.perf_counter()
             print(f"\nProcessing: {filename}")
@@ -39,7 +40,8 @@ def AnalyzeRecording(filename, file_path):
 
             return recording
 
-def deleteAudioFile(file_path):
+def deleteAudioFile(filename):
+    file_path = os.path.join(INPUTS_DIR, filename)
     try:
         os.remove(file_path)
         print(f"Deleted: {file_path}")
