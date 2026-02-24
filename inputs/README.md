@@ -1,1 +1,0 @@
-This is the directory where inputs are copied into
