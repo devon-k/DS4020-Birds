@@ -81,7 +81,7 @@ def runBirdNet():
             if os.path.splitext(filename)[1].lower() not in AUDIO_EXTENSIONS:
                 continue
             
-            recording = AnalyzeRecording(filename, file_path)
+            recording = AnalyzeRecording(filename)
 
             deleteAudioFile(file_path)
 
