@@ -4,8 +4,7 @@ from ARU_DataHelper import ARUDataHelper
 import config
 
 ROOT = Path(config.LAB_DIRECTORY).resolve() # This string needs to be the address of the lschulte-lab directory
-SCRIPT_DIR = Path(__file__).absolute().parent.parent
-DESTINATION = SCRIPT_DIR / "inputs"
+DESTINATION = Path(config.INPUTS_DIRECTORY).resolve()
 
 def get_bird_file_paths(root_directory = ROOT, location : str = None, location_type : str = None, 
                         year = None, month = None, day : int = None, file_type = None ):
