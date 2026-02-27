@@ -2,6 +2,9 @@
 ### This file is imported by other scripts to access these configuration values.
 
 LAB_DIRECTORY = "z://" #path to the lschulte-lab folder
-INPUTS_DIRECTORY = "" #path to the inputs folder
-MIN_CONFIDENCE = 0.5
-NUM_FILES = 2
+INPUTS_DIRECTORY = "inputs" #path to the inputs folder
+MIN_CONFIDENCE = 0.1
+MAX_PROCESSES = 2
+OVERLAP = 0
+
+NUM_FILES = 5
