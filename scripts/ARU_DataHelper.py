@@ -38,9 +38,12 @@ class ARUDataHelper():
         self.location = split_path[-3]
         self.location_type = split_path[-2].split("_")[1]
         self.date = split_path[-1].split("_")[-2]
+        self.time = split_path[-1].split("_")[-1]
         self.year = split_path[-1].split("_")[-2][0:4]
         self.month = split_path[-1].split("_")[-2][4:6]
         self.day = split_path[-1].split("_")[-2][6:8]
+        self.hour = split_path[-1].split("_")[-1][0:2]
+        self.minute = split_path[-1].split("_")[-1][2:4]
 
         self.to_formatted_filename()
 
@@ -65,9 +68,12 @@ class ARUDataHelper():
         self.location = split_filename[0]
         self.location_type = split_filename[1]
         self.date = split_filename[2]
+        self.time = split_filename[3]
         self.year = self.date[0:4]
         self.month = self.date[4:6]
         self.day = self.date[6:8]
+        self.hour = self.time[0:2]
+        self.minute = self.time[2:4]
 
         self.lab_path = None
 
@@ -75,7 +81,7 @@ class ARUDataHelper():
         if self.file_type == None:
             raise Exception("Cannot create formatted filename, BirdnetDataHelper is missing required data or is empty.")
 
-        self.formatted_filename = self.location + "_" + self.location_type + "_" + self.date + self.file_type
+        self.formatted_filename = self.location + "_" + self.location_type + "_" + self.date + "_" + self.time + self.file_type
         return self.formatted_filename
 
     def to_lab_path(self, root_directory):
