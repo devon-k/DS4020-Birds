@@ -33,11 +33,11 @@ class ARUDataHelper():
 
         self.lab_path = path
 
-        split_path = str(path).split("/")
+        split_path = str(path).split("\\")
         self.file_type = "." + split_path[-1].split(".")[-1]
         self.location = split_path[-3]
         self.location_type = split_path[-2].split("_")[1]
-        self.date = split_path[-1].split("_")[-2].split('.')[-2]
+        self.date = split_path[-1].split("_")[-2]
         self.year = split_path[-1].split("_")[-2][0:4]
         self.month = split_path[-1].split("_")[-2][4:6]
         self.day = split_path[-1].split("_")[-2][6:8]

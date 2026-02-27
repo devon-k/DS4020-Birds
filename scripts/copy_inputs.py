@@ -15,16 +15,16 @@ def get_bird_file_paths(root_directory = ROOT, location : str = None, location_t
 
     The generator currently includes a small number of files (361) which aren't audio.
     I don't think there is a good way around that so it has to be handled by the client 
-    taking accepting the generator.
+    accepting the generator.
     """
 
     # Takes either a string or path, needs to convert str to path.
-    if type(root_directory) == str:
+    if type(root_directory) is str:
        root_directory = Path(root_directory).resolve()
 
     lab_directory = root_directory / "ARU_data"
 
-    if month and type(month) == str:
+    if month and type(month) is str:
         try: int(month)
         except:
             month = {"jan" : 1, "feb" : 2, "mar" : 3, "apr" : 4, "may" : 5, "jun" : 6, "jul" : 7, "aug" : 8, "sep" : 9, "oct" : 10, "nov" : 11, "dec" : 12,
@@ -63,7 +63,7 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
         destination.mkdir()
 
     # Handle single paths/strings
-    if  issubclass(type(paths), Path) or type(paths) == str:
+    if issubclass(type(paths), Path) or type(paths) is str:
         if ".wav" in str(paths) or ".flac" in str(paths):
             print(f"Copying {str(paths)}")
             try:

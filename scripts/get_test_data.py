@@ -1,8 +1,8 @@
-from copy_inputs import get_bird_file_paths, copy_bird_audio, SCRIPT_DIR
+from copy_inputs import get_bird_file_paths, copy_bird_audio
 import pandas as pd
 from pathlib import Path
 import random
-from config import LAB_DIRECTORY, NUM_FILES
+from config import LAB_DIRECTORY, NUM_FILES, INPUTS_DIRECTORY
 
 def get_labelled_audio(num_files, destination = None):
     """ Collects a number of audio files from a collection of 106 human labelled examples.
@@ -13,11 +13,11 @@ def get_labelled_audio(num_files, destination = None):
     recommended using the data_helper to filter the labelled_bird_audio.csv.
     """
 
-    labelled = pd.read_csv(SCRIPT_DIR / "labelled_bird_audio.csv")
+    labelled = pd.read_csv(Path(INPUTS_DIRECTORY) / "labelled_bird_audio.csv")
     labelled_list = []
 
     for i in pd.unique(labelled["Path"]):
-        labelled_list.append(LAB_DIRECTORY / "ARU_data" / Path(i))
+        labelled_list.append(Path(LAB_DIRECTORY) / "ARU_data" / Path(i))
 
     if num_files >= 0:
         sample = random.sample(labelled_list, num_files)
