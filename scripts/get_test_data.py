@@ -13,7 +13,7 @@ def get_labelled_audio(num_files, destination = None):
     recommended using the data_helper to filter the labelled_bird_audio.csv.
     """
 
-    labelled = pd.read_csv("labelled_bird_audio.csv")
+    labelled = pd.read_csv("labelled_bird_audio.dat")
     labelled_list = []
 
     for i in pd.unique(labelled["Path"]):
