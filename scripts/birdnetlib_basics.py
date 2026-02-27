@@ -33,6 +33,7 @@ def AnalyzeRecording(filename):
                 lat=42.0347,
                 lon=-93.6199,
                 date= dataHelper.to_datetime(),
+                overlap=config.OVERLAP
             )
 
             recording.analyze()
@@ -89,7 +90,7 @@ def runBirdNet():
             return
 
         # Use multiprocessing to process files in parallel
-        num_processes = min(multiprocessing.cpu_count(), len(files))  # Use available CPUs or number of files
+        num_processes = min(multiprocessing.cpu_count(), len(files), config.MAX_PROCESSES if config.MAX_PROCESSES else 0)  # Use available CPUs, number of files, or Max Processes config setting
         print(f"Processing {len(files)} files using {num_processes} processes.")
         
         with multiprocessing.Pool(processes=num_processes) as pool:
