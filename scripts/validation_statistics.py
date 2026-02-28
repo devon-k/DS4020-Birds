@@ -1,6 +1,6 @@
 import pandas as pd
 
-labelled = pd.read_csv("data\\labelled_bird_audio.dat")
+labelled = pd.read_csv("data/labelled_bird_audio.dat")
 birdnet_results = pd.read_csv("compiled/birdnet_master.csv")
 
 birdnet_results2 = pd.DataFrame(birdnet_results)
@@ -30,7 +30,7 @@ all_human = birdnet_results2.groupby(
         on=["location", "location_type", "recording_date", "common_name"])
 
 print("-"*40)
-print(f"{"Validation Statistics" :^40}")
+print(f"{'Validation Statistics' :^40}")
 print("-"*40)
 print(f"For minimum confidence = {confidence}")
 print()
