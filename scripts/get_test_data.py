@@ -4,6 +4,8 @@ from pathlib import Path
 import random
 from config import LAB_DIRECTORY, NUM_FILES, INPUTS_DIRECTORY
 
+SCRIPTDIR = Path(__file__).absolute()
+
 def get_labelled_audio(num_files, destination = None):
     """ Collects a number of audio files from a collection of 106 human labelled examples.
 
@@ -13,7 +15,7 @@ def get_labelled_audio(num_files, destination = None):
     recommended using the data_helper to filter the labelled_bird_audio.csv.
     """
 
-    labelled = pd.read_csv("labelled_bird_audio.dat")
+    labelled = pd.read_csv(SCRIPTDIR.parent.parent / "data" / "labelled_bird_audio.dat")
     labelled_list = []
 
     for i in pd.unique(labelled["Path"]):
