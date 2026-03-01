@@ -1,6 +1,12 @@
 import pandas as pd
 from pathlib import Path
 
+SCRIPT_DIR = Path(__file__).absolute()
+
+class MissingRequiredElementsError(Exception):
+    """Raised when a file is syntactically valid but missing required elements"""
+    pass
+
 labelled = pd.read_csv( SCRIPT_DIR.parent.parent / "data" / "labelled_bird_audio.dat")
 birdnet_results = pd.read_csv(SCRIPT_DIR.parent.parent / "compiled" / "birdnet_master.csv")
 
