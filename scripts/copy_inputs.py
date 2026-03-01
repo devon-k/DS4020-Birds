@@ -2,6 +2,7 @@ from pathlib import Path
 from shutil import copy
 from ARU_DataHelper import ARUDataHelper
 import config
+import time
 
 ROOT = Path(config.LAB_DIRECTORY).resolve() # This string needs to be the address of the lschulte-lab directory
 DESTINATION = Path(config.INPUTS_DIRECTORY).resolve()
@@ -107,4 +108,9 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
 
 if __name__ == "__main__":
     file_paths = get_bird_file_paths()
-    copy_bird_audio(file_paths, num_files=config.NUM_FILES)
+
+    for i in file_paths:
+        while ( sum(1 for a in Path(DESTINATION).glob("*.flac")) + sum(1 for a in Path(DESTINATION).glob("*.wav")) ) >= config.NUM_FILES:
+            print("\rSleeping...", end = "\r")
+            time.sleep(10)
+        copy_bird_audio(i, num_files=config.NUM_FILES)
