@@ -17,7 +17,7 @@ except:
 
 
 def download_handler():
-    print("File Handler initialized")
+    print("\n---- File Handler initialized ----\n")
     filepaths = get_bird_file_paths()
 
     count = 0
@@ -35,7 +35,7 @@ def download_handler():
         if config.NUM_FILES is not None and config.NUM_FILES >= 0 and count >= config.NUM_FILES :
             break
 
-    print("File collection complete, File Handler shutting down.")
+    print("\n---- File collection complete, File Handler shutting down. ----\n")
 
 def process_audio(path : Path):
     # File processing thread
