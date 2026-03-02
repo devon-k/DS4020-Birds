@@ -80,7 +80,7 @@ def main():
                     try:
                         a = a.rename(a.parent / ("res_" + str(a.name)) ) # Reserve file
                         executor.submit(process_audio, a)
-                    except FileNotFoundError: pass
+                    except: pass
 
 if __name__ == "__main__":
     BASE_DIR = Path(__file__).absolute().parent.parent
