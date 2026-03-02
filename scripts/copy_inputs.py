@@ -108,7 +108,16 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -10):
                 print(f"Skipping {str(path)}, not a compatible audio file.")
 
 if __name__ == "__main__":
-    max_files = min(multiprocessing.cpu_count, config.MAX_PROCESSES ) * 2
+
+    # Will use MAX_PROCESSES but is not required.
+    try:
+        max_processes = config.MAX_PROCESSES 
+    except:
+        print("No MAX_PROCESSES in config, files will only be limited by cpu_count")
+        max_processes = 10000
+
+    # Will download files up to double the number of allowed processes at a time.
+    max_files = min(multiprocessing.cpu_count, max_processes) * 2
 
     file_paths = get_bird_file_paths()
     count = 0
