@@ -122,8 +122,10 @@ if __name__ == "__main__":
     file_paths = get_bird_file_paths()
     count = 0
     for a in file_paths:
+        sleep_time = time.time()
         while len(list(DESTINATION.glob("*.flac")) + list(DESTINATION.glob("*.wav"))) >= max_files :
-            time.sleep(10)
+            time.sleep(1)
+            print(f"Downloader is sleeping...{round(time.time() - sleep_time)}", end = "\r")
 
         copy_bird_audio(a)
         count += 1
