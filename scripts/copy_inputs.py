@@ -117,7 +117,7 @@ if __name__ == "__main__":
         max_processes = 10000
 
     # Will download files up to double the number of allowed processes at a time.
-    max_files = min(multiprocessing.cpu_count, max_processes) * 2
+    max_files = min(multiprocessing.cpu_count(), max_processes) * 2
 
     file_paths = get_bird_file_paths()
     count = 0
