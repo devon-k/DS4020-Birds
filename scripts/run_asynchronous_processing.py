@@ -9,23 +9,32 @@ import time
 
 inputs_dir = Path(INPUTS_DIR)
 outputs_dir = Path(OUTPUTS_DIR)
-MAX_WORKERS = min(cpu_count, config.MAX_PROCESSES+1) # Max_processes + 1 because the download handler isn't resource intensive.
+
+try:
+    MAX_WORKERS = min(cpu_count(), config.MAX_PROCESSES+1) # Max_processes + 1 because the download handler isn't resource intensive.
+except:
+    MAX_WORKERS = min(cpu_count(), 10000) # Will work without config.MAX_PROCESSES
+
 
 def download_handler():
     filepaths = get_bird_file_paths()
 
     count = 0
     for a in filepaths:
-        if count >= config.NUM_FILES:
-            return False
-        time.sleep(1)
-        while ( sum(1 for i in Path(INPUTS_DIR).glob("*.flac")) + sum(1 for i in Path(INPUTS_DIR).glob("*.wav")) ) >= MAX_WORKERS*2:
-            print("\rDownloader is sleeping...", end = "\r")
-            time.sleep(10)
+        
+        sleep_time = time.time()
+        while len( list(inputs_dir.glob("*.flac")) + list(inputs_dir.glob("*.wav"))) >= MAX_WORKERS*2:
+            print(f"Downloader is sleeping... {round(time.time() - sleep_time)}", end = "\r")
+            time.sleep(1)
+
         copy_bird_audio(a)
 
         count +=1
-            
+        # if config.NUM_FILES is set to None or -1 the downloader will collect all applicable files.
+        if config.NUM_FILES is not None and config.NUM_FILES >= 0 and count >= config.NUM_FILES :
+            print("All files collected")
+            break
+        print(count)
 
 def process_audio(path : Path):
     # File processing thread
@@ -74,6 +83,7 @@ def main():
 
 if __name__ == "__main__":
     BASE_DIR = Path(__file__).absolute().parent.parent
+    
     main()
       
     consolidate_outputs.consolidate_outputs(
