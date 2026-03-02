@@ -5,5 +5,3 @@ LAB_DIRECTORY = "z://" #path to the lschulte-lab folder
 INPUTS_DIRECTORY = "" #path to the inputs folder
 MIN_CONFIDENCE = 0.5
 NUM_FILES = 2
-
-MAX_PROCESSES = 2
