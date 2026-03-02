@@ -59,7 +59,7 @@ class ARUDataHelper():
         * file_type
         """
 
-        filename = str(filename)
+        filename = str(filename).replace("res_","")
 
         self.formatted_filename = filename.split("\\")[-1]
         self.file_type = "." + self.formatted_filename.split(".")[-1]
