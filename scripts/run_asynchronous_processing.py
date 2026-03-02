@@ -9,22 +9,21 @@ import time
 
 inputs_dir = Path(INPUTS_DIR)
 outputs_dir = Path(OUTPUTS_DIR)
+MAX_WORKERS = min(cpu_count, config.MAX_PROCESSES+1) # Max_processes + 1 because the download handler isn't resource intensive.
 
 def download_handler():
     filepaths = get_bird_file_paths()
 
     count = 0
-
     for a in filepaths:
         if count >= config.NUM_FILES:
             return False
         time.sleep(1)
-        while ( sum(1 for i in Path(INPUTS_DIR).glob("*.flac")) + sum(1 for i in Path(INPUTS_DIR).glob("*.wav")) ) >= config.MAX_PROCESSES*2:
+        while ( sum(1 for i in Path(INPUTS_DIR).glob("*.flac")) + sum(1 for i in Path(INPUTS_DIR).glob("*.wav")) ) >= MAX_WORKERS*2:
             print("\rDownloader is sleeping...", end = "\r")
             time.sleep(10)
         copy_bird_audio(a)
-        # with open(Path("data\\" + a.name), "w"):
-        #     pass
+
         count +=1
             
 
@@ -34,7 +33,6 @@ def process_audio(path : Path):
 
     try:
         recording = AnalyzeRecording(filename)
-        #deleteAudioFile(filename)
         write_detections_to_csv(recording, filename.replace("res_",""))
     except Exception as e:
         print(f"Error processing {filename}: {e}")
@@ -48,8 +46,7 @@ def main():
     Path(OUTPUTS_DIR).mkdir(exist_ok=True)
 
     # Create ThreadPoolExecutor
-    max_workers = min(cpu_count, config.MAX_PROCESSES+1) # Max_processes + 1 because the download handler isn't resource intensive.
-    with ThreadPoolExecutor(max_workers = max_workers) as executor: 
+    with ThreadPoolExecutor(max_workers = MAX_WORKERS) as executor: 
 
         # Create downloader process
         executor.submit(download_handler)
@@ -84,5 +81,3 @@ if __name__ == "__main__":
         compiled_dir=BASE_DIR / "compiled",
         min_confidence=config.MIN_CONFIDENCE
     )
-
-# asyncronus

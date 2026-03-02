@@ -20,4 +20,4 @@ source /path/to/your/venv/bin/activate
 cd /path/to/DS4020-Birds/scripts
 
 # Run the BirdNET script
-python birdnetlib_basics.py
+python run_asynchronous_processing.py
