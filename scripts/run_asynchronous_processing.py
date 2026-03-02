@@ -34,7 +34,7 @@ def download_handler():
         # if config.NUM_FILES is set to None or -1 the downloader will collect all applicable files.
         if config.NUM_FILES is not None and config.NUM_FILES >= 0 and count >= config.NUM_FILES :
             break
-        
+
     print("File collection complete, File Handler shutting down.")
 
 def process_audio(path : Path):
@@ -64,7 +64,7 @@ def main():
 
         timer = time.time()
         while True:
-            if len( list(inputs_dir.glob("*.flac") ) + list(inputs_dir.glob("*.wav")) ) < 1:
+            if len( list(inputs_dir.glob("*.flac*") ) + list(inputs_dir.glob("*.wav*")) ) < 1:
                 # Kill program statement, I wasn't able to find another way to achieve this. 
                 # We can adjust this, I figured this was an overly safe cut-off.
                 if time.time() - timer > 30: 
