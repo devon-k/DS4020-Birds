@@ -2,6 +2,8 @@ from pathlib import Path
 from shutil import copy
 from ARU_DataHelper import ARUDataHelper
 import config
+import multiprocessing
+import time
 
 ROOT = Path(config.LAB_DIRECTORY).resolve() # This string needs to be the address of the lschulte-lab directory
 DESTINATION = Path(config.INPUTS_DIRECTORY).resolve()
@@ -106,5 +108,15 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -10):
                 print(f"Skipping {str(path)}, not a compatible audio file.")
 
 if __name__ == "__main__":
+    max_files = min(multiprocessing.cpu_count, config.MAX_PROCESSES ) * 2
+
     file_paths = get_bird_file_paths()
-    copy_bird_audio(file_paths, num_files=config.NUM_FILES)
+    count = 0
+    for a in file_paths:
+        while len(list(DESTINATION.glob("*.flac")) + list(DESTINATION.glob("*.wav"))) >= max_files :
+            time.sleep(10)
+
+        copy_bird_audio(a)
+        count += 1
+        if count >= config.NUM_FILES:
+            break
