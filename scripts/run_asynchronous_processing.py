@@ -17,6 +17,7 @@ except:
 
 
 def download_handler():
+    print("File Handler Initialized")
     filepaths = get_bird_file_paths()
 
     count = 0
