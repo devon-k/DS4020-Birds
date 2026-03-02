@@ -118,5 +118,7 @@ if __name__ == "__main__":
 
         copy_bird_audio(a)
         count += 1
-        if config.NUM_FILES is not None and config.NUM_FILES > 0 and count >= config.NUM_FILES :
+    
+        # if config.NUM_FILES is set to None or -1 the downloader will collect all applicable files.
+        if config.NUM_FILES is not None and config.NUM_FILES >= 0 and count >= config.NUM_FILES :
             break
