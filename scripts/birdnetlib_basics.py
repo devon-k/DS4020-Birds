@@ -68,7 +68,8 @@ def write_detections_to_csv(recording, filename):
 def process_file(filename):
     try:
         recording = AnalyzeRecording(filename)
-        #deleteAudioFile(filename)
+        if (config.DELETE_INPUTS):
+            deleteAudioFile(filename)
         write_detections_to_csv(recording, filename)
     except Exception as e:
         print(f"Error processing {filename}: {e}")
@@ -79,26 +80,46 @@ def runBirdNet():
     os.makedirs(OUTPUTS_DIR, exist_ok=True)
 
     start = time.perf_counter()
+    processed_files = set()  # Track which files have been processed
 
     try:
-        # Get list of audio files
-        files = [f for f in os.listdir(INPUTS_DIR) if os.path.isfile(os.path.join(INPUTS_DIR, f)) and os.path.splitext(f)[1].lower() in AUDIO_EXTENSIONS]
+        print("Starting BirdNet monitor. Waiting for files in inputs directory...")
         
-        if not files:
-            print("No audio files found in inputs directory.")
-            return
+        while True:
+            try:
+                # Get current list of audio files
+                current_files = set([f for f in os.listdir(INPUTS_DIR) if os.path.isfile(os.path.join(INPUTS_DIR, f)) and os.path.splitext(f)[1].lower() in AUDIO_EXTENSIONS])
+                
+                # Find new files that haven't been processed yet
+                new_files = current_files - processed_files
+                
+                if new_files:
+                    new_files_list = list(new_files)
+                    print(f"Found {len(new_files_list)} new file(s) to process.")
+                    
+                    # Use multiprocessing to process files in parallel
+                    num_processes = min(multiprocessing.cpu_count(), len(new_files_list))
+                    print(f"Processing {len(new_files_list)} files using {num_processes} processes.")
+                    
+                    with multiprocessing.Pool(processes=num_processes) as pool:
+                        pool.map(process_file, new_files_list)
+                    
+                    # Mark these files as processed
+                    processed_files.update(new_files_list)
+                else:
+                    print("Waiting for new files...", end="\r")
+                
+                # Check for new files every 5 seconds
+                time.sleep(5)
 
-        # Use multiprocessing to process files in parallel
-        num_processes = min(multiprocessing.cpu_count(), len(files))  # Use available CPUs or number of files
-        print(f"Processing {len(files)} files using {num_processes} processes.")
-        
-        with multiprocessing.Pool(processes=num_processes) as pool:
-            pool.map(process_file, files)
-
-    except Exception as e:
-        print(f"Error: {e}")
-        import traceback
-        traceback.print_exc()
+            except KeyboardInterrupt:
+                print("\nShutting down...")
+                break
+            except Exception as e:
+                print(f"Error during monitoring: {e}")
+                import traceback
+                traceback.print_exc()
+                time.sleep(5)
 
     finally:
         end = time.perf_counter()
