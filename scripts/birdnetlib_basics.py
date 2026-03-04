@@ -1,16 +1,15 @@
 from birdnetlib import Recording
 from birdnetlib.analyzer import Analyzer
 from ARU_DataHelper import ARUDataHelper
+from pathlib import Path
 import csv
 import time
 import os
 import config
 import multiprocessing
 
-# Paths relative to this script file
-SCRIPT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-INPUTS_DIR = os.path.join(SCRIPT_DIR, "inputs")
-OUTPUTS_DIR = os.path.join(SCRIPT_DIR, "outputs")
+INPUTS_DIR = Path(config.INPUTS_DIRECTORY).resolve()
+OUTPUTS_DIR = Path(config.OUTPUTS_DIRECTORY).resolve()
 
 # Audio file extensions to process
 AUDIO_EXTENSIONS = {'.wav', '.flac'}
