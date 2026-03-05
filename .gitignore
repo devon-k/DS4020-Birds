@@ -1,7 +1,12 @@
 *.wav
-*.json
-*.csv
 *.flac
 *\__pycache__
 *\compiled
 config.py
+skipped/
+
+# Keep data/ JSON files tracked (override *.json)
+!data/*.json
+
+# Keep output CSVs untracked
+*.csv
