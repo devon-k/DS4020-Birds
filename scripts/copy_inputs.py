@@ -64,7 +64,7 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -10):
         destination.mkdir()
 
     # Handle single paths/strings
-    if type(paths) == Path or type(paths) == str:
+    if  issubclass(type(paths), Path) or type(paths) == str:
         if ".wav" in str(paths) or ".flac" in str(paths):
             print(f"Copying {str(paths)}")
             try:
@@ -72,7 +72,7 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -10):
                 data_helper.input_lab_path(paths)
                 new_file_name = data_helper.to_formatted_filename()
 
-                copy(paths, destination + "/" + new_file_name)
+                copy(paths, destination / new_file_name)
             except Exception as e:
                 print(f"Ran into a problem copying {str(paths)}")
                 print(e)
