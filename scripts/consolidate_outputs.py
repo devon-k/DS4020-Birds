@@ -61,6 +61,14 @@ def consolidate_outputs(
 
         all_dfs.append(df)
 
+        #optionally delete individual CSVs after processing
+        if config.DELETE_INDIVIDUAL_CSVS:
+            try: 
+                csv_file.unlink()
+                print(f"Deleted {csv_file.name}")
+            except Exception as e:
+                print(f"Could not delete {csv_file.name}: {e}")
+
     if not all_dfs:
         raise RuntimeError("No BirdNET outputs were successfully processed.")
 
