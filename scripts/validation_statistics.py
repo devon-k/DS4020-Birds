@@ -12,17 +12,17 @@ birdnet_results = pd.read_csv(SCRIPT_DIR.parent.parent / "compiled" / "birdnet_m
 
 birdnet_results2 = pd.DataFrame(birdnet_results)
 
+# This is a diagnostic tool so we'll just ask the user for a desired confidence score for now
 confidence = float( input("Input minimum confidence value: ") )
 
 if confidence > .99 or confidence < .01:
     raise ValueError ("Confidence level must be between .01 and .99")
 
+
+# Get results above the given confidence
 birdnet_results2 = birdnet_results2.loc[birdnet_results2['confidence'] > confidence,]
 
-# filtered_labels = birdnet_results2 |> group_by(recording_date) |> slice(1) |> ungroup() |> select(location, location_type, recording_date) |> 
-#   inner_join(labelled, by = c("location" = "site_abbreviation", "location_type" = "Type", "recording_date" = "Record_date")) |> 
-#   group_by(location, location_type, recording_date, common_name) |> slice(1) |> ungroup()
-
+# Remove labelled files which are not represented in results.
 filtered_labels = birdnet_results2.groupby(
     ["location", "location_type", "recording_date"]).head(1)[["location", "location_type", "recording_date"]].merge(
         labelled, how="inner", 
@@ -30,9 +30,13 @@ filtered_labels = birdnet_results2.groupby(
         right_on=["site_abbreviation", "Type", "Record_date"] ).groupby(
     ["location", "location_type", "recording_date", "common_name"]).head(1)
 
+# Check to make sure there are in fact labelled files represented in results. 
 if len(filtered_labels) < 1:
     raise MissingRequiredElementsError("birdnet_master.csv does not contain data from any audio which has valid human-determined labels")
 
+# Results are filtered down to the list of species detected in each file
+# inner join removes any files in results which don't have a labelled counterpart,
+# left-join to keep all remaining results observations - used for determining species in results not in labels. 
 all_birdnet = birdnet_results2.groupby(
     ["location", "location_type", "recording_date", "common_name"]).head(1).merge(
         filtered_labels[["location", "location_type", "recording_date"]], how="inner", 
@@ -40,6 +44,7 @@ all_birdnet = birdnet_results2.groupby(
         filtered_labels, how="left", 
         on=["location", "location_type", "recording_date", "common_name"])
 
+# Right-join to keep all labelled observations - used for determining species in labels not in results.
 all_human = birdnet_results2.groupby(
     ["location", "location_type", "recording_date", "common_name"]).head(1).merge(
         filtered_labels, how="right", 

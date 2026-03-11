@@ -2,6 +2,24 @@ from pathlib import Path
 from datetime import datetime
 
 class ARUDataHelper():
+    """A helper object which collects and translates information about ARU audio files.
+
+    Used extensively by the ARU Bird Audio project to pass information through the pipeline.
+
+    Attributes:
+        lab_path (Path)
+        formatted_filename (str)
+        file_type (str)
+        location (str)
+        location_type (str)
+        date (str)
+        year (str)
+        month (str)
+        day (str)
+        hour (str)
+        minute (str)
+
+    """
         
     def __init__(self):
         self.lab_path = None
@@ -14,19 +32,11 @@ class ARUDataHelper():
         self.year = None
         self.month = None
         self.day = None
+        self.hour = None
+        self.minute = None
 
     def input_lab_path(self, path):
-        """
-        Takes a path for an ARU birds audio file to load the dataHelper.
-
-        * location
-        * location_type
-        * date
-        * year
-        * month
-        * day
-        * file_type
-        """
+        """Takes a path for an ARU birds audio file to load the dataHelper."""
 
         if type(path) == str:
             path = Path(path)
@@ -38,7 +48,7 @@ class ARUDataHelper():
         self.location = path.parent.parent.name
         self.location_type = path.parent.name.split("_")[1]
         self.date = filename.split("_")[-2]
-        self.time = filename.split("_")[-1].split('.')[-2]
+        self.time = filename.split("_")[-1].split('.')[0]
         self.year = filename.split("_")[-2][0:4]
         self.month = filename.split("_")[-2][4:6]
         self.day = filename.split("_")[-2][6:8]
@@ -48,15 +58,7 @@ class ARUDataHelper():
         self.to_formatted_filename()
 
     def input_formatted_filename(self, filename):
-        """
-        Takes a formatted filename for an ARU birds audio file to load the dataHelper.
-        * location
-        * location_type
-        * date
-        * year
-        * month
-        * day
-        * file_type
+        """Takes a formatted filename (from this class) for an ARU birds audio file to load the dataHelper.
         """
 
         filename = Path(filename).name
@@ -68,16 +70,25 @@ class ARUDataHelper():
         self.location = split_filename[0]
         self.location_type = split_filename[1]
         self.date = split_filename[2]
-        self.time = split_filename[3].split('.')[-2]
         self.year = self.date[0:4]
         self.month = self.date[4:6]
         self.day = self.date[6:8]
-        self.hour = self.time[0:2]
-        self.minute = self.time[2:4]
+
+        try:
+            self.time = split_filename[3].split('.')[0]
+            self.hour = self.time[0:2]
+            self.minute = self.time[2:4]
+        except:
+            self.legacy = True
+            self.time = "000000"
+            self.hour = "00"
+            self.minute = "00"
 
         self.lab_path = None
 
-    def to_formatted_filename(self):
+    def to_formatted_filename(self) -> str:
+        """Generates a filename which encodes the relevant data about the loaded file."""
+
         if self.file_type == None:
             raise Exception("Cannot create formatted filename, BirdnetDataHelper is missing required data or is empty.")
 
@@ -85,20 +96,14 @@ class ARUDataHelper():
         return self.formatted_filename
 
     def to_lab_path(self, root_directory):
-        """
-        Performs a search to find the path to the original location of a file with a formatted filename.
+        """Performs a search to find the path to the original location of a file with a formatted filename.
 
-        Requires the local lshulte-lab root directory to do perform the search.
-
-        Docstring for to_lab_path
-        
-        :param self: Description
-        :param root_directory: The path or address to the lshulte-lab directory.
-        :type root_directory: Path
+        Requires the local lshulte-lab root directory to do perform the search, returns a path if one file is found,
+        a list of paths if more than one possible path is found, or None if no path is found.
         """
 
         if self.file_type == None:
-            raise Exception("Cannot find lab_path, BirdnetDataHelper is missing required data or is empty.")
+            raise Exception("Error: BirdnetDataHelper is missing required data or is empty.")
         
         if type(root_directory) == str:
             root_directory = Path(root_directory).resolve()
@@ -113,13 +118,13 @@ class ARUDataHelper():
         possible_paths = list(lab_directory.glob(glob_string))
 
         if len(possible_paths) == 0:
-            print("Lab path not found")
+            # print("Lab path not found")
             return None
         elif len(possible_paths) == 1:
             self.lab_path = possible_paths[0]
             return possible_paths[0]
         else:
-            print("Many possibilities found")
+            # print("Many possible paths found")
             return possible_paths
         
     def to_datetime(self):
