@@ -8,3 +8,8 @@ MIN_CONFIDENCE = 0.5
 NUM_FILES = 2
 MAX_FILES = 5
 DELETE_INPUTS = True
+
+# Weather filter thresholds (used by weather_filter.py)
+MAX_WIND_MPH = 20
+MAX_PRECIP_INCHES = 0.5
+DELETE_INDIVIDUAL_CSVS = False

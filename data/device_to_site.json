@@ -1,0 +1,102 @@
+{
+    "_comment": "Maps audio device/recorder filename prefixes to their 3-letter site abbreviation. Generated from the ARU_data folder structure. STRIPS1 and STRIPS2 are AMBIGUOUS (used at multiple sites) and cannot be resolved from filename alone — those files must go through copy_inputs.py first.",
+
+    "ARM-CTL":  "ARM",
+    "ARMSCTL":  "ARM",
+    "ARMSEXP":  "ARM",
+    "ARMS_CTL": "ARM",
+    "ARMS _EXP":"ARM",
+    "ARMTER":   "ARM",
+
+    "DMWW-EXP": "DMW",
+
+    "EIA-CTL":  "EIA",
+    "EIA-EXP":  "EIA",
+    "EIA-TER":  "EIA",
+    "EIACRP":   "EIA",
+
+    "GUT-CTL":  "GUT",
+    "GUTH-CTL": "GUT",
+    "GUTH-EXP": "GUT",
+
+    "JUD-CRP":  "JUD",
+    "JUD-CRP1": "JUD",
+    "JUD-EXP":  "JUD",
+    "JUD-TER":  "JUD",
+    "JUD_CRP":  "JUD",
+    "JUDS-CRPH":"JUD",
+    "JUDS-CRPL":"JUD",
+    "JUDS-CTL": "JUD",
+    "JUDS-EXP1":"JUD",
+    "JUDS-EXP2":"JUD",
+    "JUDS-TER": "JUD",
+    "JUDSCRP2": "JUD",
+    "JUDSCRPL": "JUD",
+
+    "KALD-CTL": "KAL",
+    "KALD-EXP": "KAL",
+
+    "MCCL-CTL": "MCC",
+    "MCCL-EXP": "MCC",
+    "MCCL-TER": "MCC",
+
+    "MCN-CTL":  "MCN",
+    "MCNA-CTL": "MCN",
+    "MCNA-EXP": "MCN",
+    "MCNACTL":  "MCN",
+
+    "MOR-EXP":  "MOR",
+    "MORSE":    "MOR",
+
+    "ROES":     "ROE",
+
+    "SLO-CTL":  "SLO",
+    "SLOA-EXP": "SLO",
+    "SLOA-TE":  "SLO",
+    "SLOA_CTL": "SLO",
+
+    "SMEL-CRP": "SME",
+    "SMEL-CTL": "SME",
+    "SMEL-EXP": "SME",
+    "SMEL-TER": "SME",
+
+    "SMI-CRP":  "SMI",
+    "SMIT-CRP": "SMI",
+    "SMIT-CTL": "SMI",
+    "SMIT-EXP": "SMI",
+
+    "SPI-CRP":  "SPI",
+
+    "WATK-CRP": "WAT",
+    "WATK-CTL": "WAT",
+    "WATK-EXPN":"WAT",
+    "WATK-TER": "WAT",
+    "WATK-WET": "WAT",
+
+    "WHRK-TR":  "WHI",
+    "WTRK-CRP": "WHI",
+    "WTRKCTL1": "WHI",
+    "WTRKCTL2": "WHI",
+    "WTRKCTLN": "WHI",
+    "WTRKCTLS": "WHI",
+    "WTRKEXP2": "WHI",
+    "WTRKEXPN": "WHI",
+    "WTRKTER":  "WHI",
+    "WTRKTER1": "WHI",
+    "WTRKTER2": "WHI",
+
+    "WORR-CTL": "WOR",
+    "WORR-EXP": "WOR",
+
+    "ASCC_":    "TNC",
+    "FROHLING": "TNC",
+    "FRYE":     "TNC",
+    "JACOBSEN": "TNC",
+    "NRCS":     "TNC",
+    "OLSON":    "TNC",
+    "PETERSON": "TNC",
+    "WOODALL":  "TNC",
+
+    "_AMBIGUOUS_STRIPS1": ["ARM", "DMW", "MCC", "MCN", "SLO", "WHI"],
+    "_AMBIGUOUS_STRIPS2": ["ARM", "JUD", "WHI"]
+}
