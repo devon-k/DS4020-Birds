@@ -73,10 +73,7 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
 
                 copy(paths, destination / new_file_name)
             except Exception as e:
-                print(f"Ran into a problem copying {str(paths)}")
-                print(e)
-                import traceback
-                traceback.print_exc()
+               print(f"Error {e} on {str(path)}")
         else:
             print(f"Skipping {str(paths)}, not a compatible audio file.")
 
@@ -97,10 +94,7 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
 
                     i += 1
                 except Exception as e:
-                    print(f"Ran into a problem copying {str(path)}")
-                    print(e)
-                    import traceback
-                    traceback.print_exc()
+                    print(f"Error {e} on {str(path)}")
                     
             else:
                 print(f"Skipping {str(path)}, not a compatible audio file.")
