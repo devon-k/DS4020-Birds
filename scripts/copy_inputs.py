@@ -47,12 +47,14 @@ def get_bird_file_paths(root_directory = ROOT, location : str = None, location_t
 
     return lab_directory.glob(glob_string) #"???/*/*"
 
-def copy_bird_audio(paths, destination = DESTINATION, num_files = -10):
+def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FILES, max_files = config.MAX_FILES):
     """ Copies a number of files from a collection of paths to a destination folder.
 
     paths can be a path, string, generator, or collection.
     
-    Collects all files if num_files is set to -1.
+    Gets destination, num_files, and max_files from config if none provided.
+    * num_files is the total number of files to download. Collects all files in paths object if set to -1 or None.
+    * max_files tells the downloader to keep only a certain number of files in the destination directory at a time. Ignores if set to -1 or None.
 
     Filetames are changed to reflect their identifying values:
     [location]_[location_type]_[yyyymmdd][filetype]
@@ -86,8 +88,15 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -10):
     else:
         i = 0
         for path in paths:
-            if i == num_files:
+            # Break if routine downloads the required number of files
+            if num_files is not None and num_files >= 0 and i >= num_files:
                 break
+
+            # Routine sleeps if there are too many files waiting.
+            sleep_time = time.time()
+            while max_files is not None and len(list(destination.glob("*.flac")) + list(destination.glob("*.wav"))) >= max_files :
+                time.sleep(1)
+                print(f"Downloader is sleeping...{round(time.time() - sleep_time)}", end = "\r")
 
             if ".wav" in str(path) or ".flac" in str(path):
                 print(f"Copying {str(path)}")
@@ -109,27 +118,5 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -10):
 
 if __name__ == "__main__":
 
-    # Will use MAX_PROCESSES but is not required.
-    try:
-        max_processes = config.MAX_PROCESSES 
-    except:
-        print("No MAX_PROCESSES in config, files will only be limited by cpu_count")
-        max_processes = 10000
-
-    # Will download files up to double the number of allowed processes at a time.
-    max_files = config.MAX_FILES
-
     file_paths = get_bird_file_paths()
-    count = 0
-    for a in file_paths:
-        sleep_time = time.time()
-        while len(list(DESTINATION.glob("*.flac")) + list(DESTINATION.glob("*.wav"))) >= max_files :
-            time.sleep(1)
-            print(f"Downloader is sleeping...{round(time.time() - sleep_time)}", end = "\r")
-
-        copy_bird_audio(a)
-        count += 1
-    
-        # if config.NUM_FILES is set to None or -1 the downloader will collect all applicable files.
-        if config.NUM_FILES is not None and config.NUM_FILES >= 0 and count >= config.NUM_FILES :
-            break
+    copy_bird_audio(file_paths)
