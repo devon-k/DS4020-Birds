@@ -66,14 +66,23 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
     if issubclass(type(paths), Path) or type(paths) is str:
         if ".wav" in str(paths) or ".flac" in str(paths):
             print(f"Copying {str(paths)}", end = "\r")
-            try:
-                data_helper = ARUDataHelper()
-                data_helper.input_lab_path(paths)
-                new_file_name = data_helper.to_formatted_filename()
 
-                copy(paths, destination / new_file_name)
+            data_helper = ARUDataHelper()
+            data_helper.input_lab_path(paths)
+            new_file_name = data_helper.to_formatted_filename()
+
+            tempname = destination / (new_file_name + ".tmp")
+            final_path = destination / new_file_name
+
+            try:
+                copy(paths, tempname)
+                tempname.rename(final_path)
+
             except Exception as e:
                print(f"Error {e} on {str(path)}")
+                
+            finally:
+                tempname.unlink(missing_ok=True)
         else:
             print(f"Skipping {str(paths)}, not a compatible audio file.")
 
@@ -86,15 +95,24 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
 
             if ".wav" in str(path) or ".flac" in str(path):
                 print(f"Copying file {i+1} {str(path)}", end = "\r")
+
+                data_helper = ARUDataHelper()
+                data_helper.input_lab_path(path)
+                new_file_name = data_helper.to_formatted_filename()
+
+                tempname = destination / (new_file_name + ".tmp")
+                final_path = destination / new_file_name
+
                 try:
-                    data_helper = ARUDataHelper()
-                    data_helper.input_lab_path(path)
-                    new_file_name = data_helper.to_formatted_filename()
-                    copy(path, destination / new_file_name)
+                    copy(path, tempname)
+                    tempname.rename(final_path)
 
                     i += 1
                 except Exception as e:
                     print(f"Error {e} on {str(path)}")
+
+                finally:
+                    tempname.unlink(missing_ok=True)
                     
             else:
                 print(f"Skipping {str(path)}, not a compatible audio file.")
