@@ -33,17 +33,17 @@ class ARUDataHelper():
 
         self.lab_path = path
 
-        split_path = str(path).split("\\")
-        self.file_type = "." + split_path[-1].split(".")[-1]
-        self.location = split_path[-3]
-        self.location_type = split_path[-2].split("_")[1]
-        self.date = split_path[-1].split("_")[-2]
-        self.time = split_path[-1].split("_")[-1].split('.')[-2]
-        self.year = split_path[-1].split("_")[-2][0:4]
-        self.month = split_path[-1].split("_")[-2][4:6]
-        self.day = split_path[-1].split("_")[-2][6:8]
-        self.hour = split_path[-1].split("_")[-1][0:2]
-        self.minute = split_path[-1].split("_")[-1][2:4]
+        filename = path.name
+        self.file_type = "." + filename.split(".")[-1]
+        self.location = path.parent.parent.name
+        self.location_type = path.parent.name.split("_")[1]
+        self.date = filename.split("_")[-2]
+        self.time = filename.split("_")[-1].split('.')[-2]
+        self.year = filename.split("_")[-2][0:4]
+        self.month = filename.split("_")[-2][4:6]
+        self.day = filename.split("_")[-2][6:8]
+        self.hour = filename.split("_")[-1][0:2]
+        self.minute = filename.split("_")[-1][2:4]
 
         self.to_formatted_filename()
 
@@ -59,9 +59,9 @@ class ARUDataHelper():
         * file_type
         """
 
-        filename = str(filename)
+        filename = Path(filename).name
 
-        self.formatted_filename = filename.split("\\")[-1]
+        self.formatted_filename = filename
         self.file_type = "." + self.formatted_filename.split(".")[-1]
 
         split_filename = self.formatted_filename.split("_")
