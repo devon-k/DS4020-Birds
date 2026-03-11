@@ -2,6 +2,8 @@ from pathlib import Path
 from shutil import copy
 from ARU_DataHelper import ARUDataHelper
 import config
+import multiprocessing
+import time
 
 ROOT = Path(config.LAB_DIRECTORY).resolve() # This string needs to be the address of the lschulte-lab directory
 DESTINATION = Path(config.INPUTS_DIRECTORY).resolve()
@@ -45,12 +47,14 @@ def get_bird_file_paths(root_directory = ROOT, location : str = None, location_t
 
     return lab_directory.glob(glob_string) #"???/*/*"
 
-def copy_bird_audio(paths, destination = DESTINATION, num_files = -10):
+def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FILES, max_files = config.MAX_FILES):
     """ Copies a number of files from a collection of paths to a destination folder.
 
     paths can be a path, string, generator, or collection.
     
-    Collects all files if num_files is set to -1.
+    Gets destination, num_files, and max_files from config if none provided.
+    * num_files is the total number of files to download. Collects all files in paths object if set to -1 or None.
+    * max_files tells the downloader to keep only a certain number of files in the destination directory at a time. Ignores if set to -1 or None.
 
     Filetames are changed to reflect their identifying values:
     [location]_[location_type]_[yyyymmdd][filetype]
@@ -84,8 +88,15 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -10):
     else:
         i = 0
         for path in paths:
-            if i == num_files:
+            # Break if routine downloads the required number of files
+            if num_files is not None and num_files >= 0 and i >= num_files:
                 break
+
+            # Routine sleeps if there are too many files waiting.
+            sleep_time = time.time()
+            while max_files is not None and len(list(destination.glob("*.flac")) + list(destination.glob("*.wav"))) >= max_files :
+                time.sleep(1)
+                print(f"Downloader is sleeping...{round(time.time() - sleep_time)}", end = "\r")
 
             if ".wav" in str(path) or ".flac" in str(path):
                 print(f"Copying {str(path)}")
@@ -106,5 +117,6 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -10):
                 print(f"Skipping {str(path)}, not a compatible audio file.")
 
 if __name__ == "__main__":
+
     file_paths = get_bird_file_paths()
-    copy_bird_audio(file_paths, num_files=config.NUM_FILES)
+    copy_bird_audio(file_paths)
