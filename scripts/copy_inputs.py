@@ -2,6 +2,7 @@ from pathlib import Path
 from shutil import copy
 from ARU_DataHelper import ARUDataHelper
 import config
+import time
 
 ROOT = Path(config.LAB_DIRECTORY).resolve() # This string needs to be the address of the lschulte-lab directory
 DESTINATION = Path(config.INPUTS_DIRECTORY).resolve()
@@ -93,6 +94,20 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
             if i == num_files:
                 break
 
+            # Check network access
+            networkOK = False
+
+            while not networkOK:
+                try:
+                    networkOK = ROOT.exists()
+                except:
+                    networkOK = False
+
+                if not networkOK:
+                    print("Error: Lost connection to root directory, trying to reconnect..." ,end ="\r")
+                    time.sleep(1)
+
+            # Download file
             if ".wav" in str(path) or ".flac" in str(path):
                 print(f"Copying file {i+1} {str(path)}", end = "\r")
 
