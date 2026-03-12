@@ -80,7 +80,7 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
                 tempname.rename(final_path)
 
             except Exception as e:
-               print(f"Error {e} on {str(path)}")
+               print(f"Error {e} on {str(paths)}")
                 
             finally:
                 tempname.unlink(missing_ok=True)
