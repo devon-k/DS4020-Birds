@@ -1,10 +1,11 @@
 ### Make a copy of this file and name it "config.py". Then, edit the values below as needed for your environment and preferences. 
 ### This file is imported by other scripts to access these configuration values.
 
-LAB_DIRECTORY = "z://" #path to the lschulte-lab folder
-INPUTS_DIRECTORY = "" #path to the inputs folder
+LAB_DIRECTORY = "z://"
 MIN_CONFIDENCE = 0.5
 NUM_FILES = 2
+MAX_PROCESSES = 2
+OVERLAP = 0
 
 # Weather filter thresholds (used by weather_filter.py)
 MAX_WIND_MPH = 20
