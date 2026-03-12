@@ -66,7 +66,7 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = -1):
     # Handle single paths/strings
     if issubclass(type(paths), Path) or type(paths) is str:
         if ".wav" in str(paths) or ".flac" in str(paths):
-            print(f"Copying /{path.parent.parent.name + "/" + path.parent.name + "/" + path.name}", end = "\r")
+            print(f"Copying /{paths.parent.parent.name + "/" + paths.parent.name + "/" + paths.name}", end = "\r")
 
             data_helper = ARUDataHelper()
             data_helper.input_lab_path(paths)
