@@ -3,8 +3,11 @@
 
 LAB_DIRECTORY = "z://" #path to the lschulte-lab folder
 INPUTS_DIRECTORY = "" #path to the inputs folder
+OUTPUTS_DIRECTORY = "" #path to the outputs folder
 MIN_CONFIDENCE = 0.5
 NUM_FILES = 2
+MAX_FILES = 5
+DELETE_INPUTS = True
 
 # Weather filter thresholds (used by weather_filter.py)
 MAX_WIND_MPH = 20

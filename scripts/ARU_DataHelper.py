@@ -33,7 +33,7 @@ class ARUDataHelper():
 
         self.lab_path = path
 
-        split_path = str(path).split("/")
+        split_path = str(path).split("\\")
         self.file_type = "." + split_path[-1].split(".")[-1]
         self.location = split_path[-3]
         self.location_type = split_path[-2].split("_")[1]
