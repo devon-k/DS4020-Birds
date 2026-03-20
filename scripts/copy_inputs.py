@@ -7,6 +7,7 @@ import time
 
 ROOT = Path(config.LAB_DIRECTORY).resolve() # This string needs to be the address of the lschulte-lab directory
 DESTINATION = Path(config.INPUTS_DIRECTORY).resolve()
+OUTPUTS = Path(config.OUTPUTS_DIRECTORY).resolve()
 
 def get_bird_file_paths(root_directory = ROOT, location : str = None, location_type : str = None, 
                         year = None, month = None, day : int = None, file_type = None ):
@@ -75,7 +76,9 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FIL
                 data_helper.input_lab_path(paths)
                 new_file_name = data_helper.to_formatted_filename()
 
-                copy(paths, destination / new_file_name)
+                if not (OUTPUTS / new_file_name.replace(".wav",".csv").replace(".flac",".csv")).exists():
+                    copy(paths, destination / new_file_name)
+
             except Exception as e:
                 print(f"Ran into a problem copying {str(paths)}")
                 print(e)

@@ -97,7 +97,7 @@ def runBirdNet():
                     print(f"Found {len(new_files_list)} new file(s) to process.")
                     
                     # Use multiprocessing to process files in parallel
-                    num_processes = min(multiprocessing.cpu_count(), len(new_files_list))
+                    num_processes = min(multiprocessing.cpu_count(), len(new_files_list), config.MAX_PROCESSES)
                     print(f"Processing {len(new_files_list)} files using {num_processes} processes.")
                     
                     with multiprocessing.Pool(processes=num_processes) as pool:

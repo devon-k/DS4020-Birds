@@ -4,6 +4,7 @@
 LAB_DIRECTORY = "z://" #path to the lschulte-lab folder
 INPUTS_DIRECTORY = "" #path to the inputs folder
 OUTPUTS_DIRECTORY = "" #path to the outputs folder
+BASE_DIR = "" #path to parent folder
 MIN_CONFIDENCE = 0.5
 NUM_FILES = 2
 MAX_FILES = 5

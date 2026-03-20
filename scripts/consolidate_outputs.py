@@ -88,7 +88,7 @@ def consolidate_outputs(
 
 
 if __name__ == "__main__":
-    BASE_DIR = Path(__file__).absolute().parent.parent
+    BASE_DIR = Path(config.BASE_DIR).resolve()
 
     consolidate_outputs(
         outputs_dir=BASE_DIR / "outputs",
