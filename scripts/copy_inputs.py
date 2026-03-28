@@ -67,6 +67,20 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FIL
 
     # Handle single paths/strings
     if issubclass(type(paths), Path) or type(paths) is str:
+
+        # Check network access
+        networkOK = False
+
+        while not networkOK:
+            try:
+                networkOK = ROOT.exists()
+            except:
+                networkOK = False
+
+            if not networkOK:
+                print("Error: Lost connection to root directory, trying to reconnect..." ,end ="\r")
+                time.sleep(1)
+
         if ".wav" in str(paths) or ".flac" in str(paths):
             print(f"Copying /{paths.parent.parent.name + "/" + paths.parent.name + "/" + paths.name}", end = "\r")
 
@@ -103,9 +117,6 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FIL
                 time.sleep(1)
                 print(f"Downloader is sleeping...{round(time.time() - sleep_time)}", end = "\r")
 
-            if ".wav" in str(path) or ".flac" in str(path):
-                print(f"Copying {str(path)}")
-
             # Check network access
             networkOK = False
 
@@ -129,6 +140,10 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FIL
 
                 tempname = destination / (new_file_name + ".tmp")
                 final_path = destination / new_file_name
+
+                if final_path.exists():
+                    i += 1
+                    continue
 
                 try:
                     copy(path, tempname)
