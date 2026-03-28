@@ -118,3 +118,11 @@ class ARUDataHelper():
         
     def to_datetime(self):
         return datetime(year = int(self.year), month = int(self.month), day = int(self.day))
+
+    def get_lat(self):
+        #TODO
+        pass
+
+    def get_long(self):
+        #TODO
+        pass
