@@ -27,7 +27,7 @@ filtered_labels = birdnet_results2.groupby(
     ["location", "location_type", "recording_date"]).head(1)[["location", "location_type", "recording_date"]].merge(
         labelled, how="inner", 
         left_on=["location", "location_type", "recording_date"], 
-        right_on=["site_abbreviation", "Type", "Record_date"] ).groupby(
+        right_on=["Site", "Type", "Record_date"] ).groupby(
     ["location", "location_type", "recording_date", "common_name"]).head(1)
 
 # Check to make sure there are in fact labelled files represented in results. 
