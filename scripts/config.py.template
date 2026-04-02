@@ -9,6 +9,7 @@ NUM_FILES = 2
 MAX_FILES = 5
 DELETE_INPUTS = True
 
+ARU_DEFAULT_COORDS = {'lat' : 42.0347, 'lon' : -93.6199}
 ARU_COORDS_ADDRESS = "Z://ARU_data/Giese_occurrence_data/STRIPS_site_abbreviation_and_centroid.csv"
 
 # Weather filter thresholds (used by weather_filter.py)
