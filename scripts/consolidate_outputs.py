@@ -43,10 +43,13 @@ def consolidate_outputs(
         # Attach metadata columns
         df["location"] = helper.location
         df["location_type"] = helper.location_type
-        df["date"] = helper.date
+        df["date_string"] = helper.date
+        df["time_string"] = helper.time
         df["year"] = helper.year
         df["month"] = helper.month
         df["day"] = helper.day
+        df["hour"] = helper.hour
+        df["minute"] = helper.minute
         df["formatted_filename"] = helper.formatted_filename
 
         # Optional datetime column (useful later)
