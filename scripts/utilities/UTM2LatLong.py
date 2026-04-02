@@ -51,7 +51,7 @@ def utmToLatLong(utmNorthing, utmEasting, utmZone):
     zoneNumber = int(utmZone)
 
     # This line below is for debug purposes only, remove for batch processes.
-    print("The input is: " + str(utmEasting) + "m E, " + str(utmNorthing) + "m N in NAD83 UTM Zone " + str(utmZone) + "\n")
+    # print("The input is: " + str(utmEasting) + "m E, " + str(utmNorthing) + "m N in NAD83 UTM Zone " + str(utmZone) + "\n")
 
     # Finds the origin longitude for the zone
     lonOrigin = (zoneNumber - 1) * 6 - 180 + 3 # +3 puts in zone centre
