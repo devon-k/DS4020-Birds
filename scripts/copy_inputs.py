@@ -61,12 +61,15 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FIL
     ex: ARM_CTL_20180301.wav
     """
 
+    destination = Path(destination)
+
     # Create destination if it doesn't exist
     if not destination.is_dir():
         destination.mkdir()
 
     # Handle single paths/strings
     if issubclass(type(paths), Path) or type(paths) is str:
+        path = Path(paths)
 
         # Check network access
         networkOK = False
@@ -81,27 +84,27 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FIL
                 print("Error: Lost connection to root directory, trying to reconnect..." ,end ="\r")
                 time.sleep(1)
 
-        if ".wav" in str(paths) or ".flac" in str(paths):
-            print(f"Copying /{paths.parent.parent.name + "/" + paths.parent.name + "/" + paths.name}", end = "\r")
+        if ".wav" in str(path) or ".flac" in str(path):
+            print(f"Copying /{path.parent.parent.name + "/" + path.parent.name + "/" + path.name}", end = "\r")
 
             data_helper = ARUDataHelper()
-            data_helper.input_lab_path(paths)
+            data_helper.input_lab_path(path)
             new_file_name = data_helper.to_formatted_filename()
 
             tempname = destination / (new_file_name + ".tmp")
             final_path = destination / new_file_name
 
             try:
-                copy(paths, tempname)
+                copy(path, tempname)
                 tempname.rename(final_path)
 
             except Exception as e:
-               print(f"Error {e} on {str(paths)}")
+               print(f"Error {e} on {str(path)}")
                 
             finally:
                 tempname.unlink(missing_ok=True)
         else:
-            print(f"Skipping {str(paths)}, not a compatible audio file.")
+            print(f"Skipping {str(path)}, not a compatible audio file.")
 
     # Handle collections/generators
     else:
