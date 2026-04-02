@@ -22,5 +22,5 @@ locations = location_data["site"].tolist()
 print("\n All of the sites:")
 
 for i in locations:
-    print(get_location(i))
+    print(f"{i}: {get_location(i)}")
 
