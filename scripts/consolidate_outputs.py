@@ -8,7 +8,8 @@ from ARU_DataHelper import ARUDataHelper
 def consolidate_outputs(
     outputs_dir: Path,
     compiled_dir: Path,
-    min_confidence: float = config.MIN_CONFIDENCE
+    min_confidence: float = config.MIN_CONFIDENCE, 
+    append_to_master: bool = config.APPEND_TO_MASTER
 ):
     """
     Consolidate BirdNET output CSV files into a single master dataset.
@@ -16,6 +17,13 @@ def consolidate_outputs(
     This function assumes:
     - CSV filenames follow the formatted naming convention created by copy_inputs
     - Metadata is parsed exclusively using ARUDataHelper
+
+    Args:
+        outputs_dir (Path): Directory containing BirdNET CSV outputs.
+        compiled_dir (Path): Directory where the master CSV will be stored.
+        min_confidence (float): Optional confidence threshold to filter detections.
+        append_to_master (bool): If True, append new data to existing master CSV.
+                                 If False, overwrite master CSV.
     """
 
     outputs_dir = Path(outputs_dir)
@@ -70,21 +78,33 @@ def consolidate_outputs(
         raise RuntimeError("No BirdNET outputs were successfully processed.")
 
     # Combine into master dataframe
-    master_df = pd.concat(all_dfs, ignore_index=True)
+    new_data_df = pd.concat(all_dfs, ignore_index=True)
 
     # Standardize column names (BirdNET + metadata)
-    master_df.columns = (
-        master_df.columns
+    new_data_df.columns = (
+        new_data_df.columns
         .str.strip()
         .str.lower()
         .str.replace(" ", "_")
         .str.replace(r"[()]", "", regex=True)
     )
+    # if appending, check for existing master CSV
+    if append_to_master and master_csv.exists(): 
+        try: 
+            existing_df = pd.read_csv(master_csv)
+            master_df = pd.concat([existing_df, new_data_df], ignore_index=True)
+            print(f"Appended {len(new_data_df)} new detections to existing master CSV.")
+        except Exception as e: 
+            print(f"could not read existing master CSV, overwriting: {e}")
+            master_df = new_data_df
+    else: 
+        master_df = new_data_df
+        if append_to_master: 
+            print("Master CSV doesn't exist yet, creating new file.")
 
     master_df.to_csv(master_csv, index=False)
-
-    print(f"Master CSV written to: {master_csv}")
-    print(f"Total detections: {len(master_df)}")
+    print(f"Master CSV written to: {master_csv}") 
+    print(f"total detection in master CSV: {len(master_df)}")   
 
 
 if __name__ == "__main__":
@@ -93,5 +113,6 @@ if __name__ == "__main__":
     consolidate_outputs(
         outputs_dir=BASE_DIR / "outputs",
         compiled_dir=BASE_DIR / "compiled",
-        min_confidence=config.MIN_CONFIDENCE
+        min_confidence=config.MIN_CONFIDENCE,
+        append_to_master=config.APPEND_TO_MASTER
     )
