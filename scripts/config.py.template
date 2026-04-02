@@ -9,6 +9,8 @@ NUM_FILES = 2
 MAX_FILES = 5
 DELETE_INPUTS = True
 
+ARU_COORDS_ADDRESS = "Z://ARU_data/Giese_occurrence_data/STRIPS_site_abbreviation_and_centroid.csv"
+
 # Weather filter thresholds (used by weather_filter.py)
 MAX_WIND_MPH = 20
 MAX_PRECIP_INCHES = 0.5
