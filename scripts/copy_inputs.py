@@ -16,7 +16,7 @@ def get_bird_file_paths(root_directory = ROOT, location : str = None, location_t
 
     The generator currently includes a small number of files (361) which aren't audio.
     I don't think there is a good way around that so it has to be handled by the client 
-    taking accepting the generator.
+    accepting the generator.
     """
 
     # Takes either a string or path, needs to convert str to path.
