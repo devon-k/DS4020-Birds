@@ -2,6 +2,24 @@ from pathlib import Path
 from datetime import datetime
 
 class ARUDataHelper():
+    """A helper object which collects and translates information about STRIPS ARU audio files.
+
+    Used extensively by the ARU Bird Audio project to pass information through the pipeline.
+
+    Attributes:
+        lab_path (Path)
+        formatted_filename (str)
+        file_type (str)
+        location (str)
+        location_type (str)
+        date (str)
+        year (str)
+        month (str)
+        day (str)
+        hour (str)
+        minute (str)
+
+    """
         
     def __init__(self):
         self.lab_path = None
@@ -18,16 +36,10 @@ class ARUDataHelper():
         self.minute = None
 
     def input_lab_path(self, path):
-        """
-        Takes a path for an ARU birds audio file to load the dataHelper.
-
-        * location
-        * location_type
-        * date
-        * year
-        * month
-        * day
-        * file_type
+        """Takes a path for a STRIPS ARU audio file to load the dataHelper.
+        
+        The format of compatible paths are <site> / <sub_site_type> / <audio_file>
+        
         """
 
         if type(path) == str:
@@ -50,15 +62,10 @@ class ARUDataHelper():
         self.to_formatted_filename()
 
     def input_formatted_filename(self, filename):
-        """
-        Takes a formatted filename for an ARU birds audio file to load the dataHelper.
-        * location
-        * location_type
-        * date
-        * year
-        * month
-        * day
-        * file_type
+        """Takes a formatted filename (from this class) for an STRIPS ARU audio file to load the dataHelper.
+
+        This input is friendly to inputs from older versions of this handler which don't include time data.
+
         """
 
         filename = Path(filename).name
@@ -96,16 +103,11 @@ class ARUDataHelper():
         return self.formatted_filename
 
     def to_lab_path(self, root_directory):
-        """
-        Performs a search to find the path to the original location of a file with a formatted filename.
+        """Performs a search to find the path to the original location of a file with a formatted filename.
 
-        Requires the local lshulte-lab root directory to do perform the search.
-
-        Docstring for to_lab_path
-        
-        :param self: Description
-        :param root_directory: The path or address to the lshulte-lab directory.
-        :type root_directory: Path
+        Requires the local root directory to do perform the search, returns a path if one file is found,
+        a list of paths if more than one possible path is found (this should only happen if the input data 
+        is incomplete somehow), or None if no path is found.
         """
 
         if self.file_type == None:
