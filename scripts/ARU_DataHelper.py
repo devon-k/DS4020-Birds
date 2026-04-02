@@ -1,5 +1,6 @@
 from pathlib import Path
 from datetime import datetime
+from utilities.get_location import get_location
 
 class ARUDataHelper():
         
@@ -14,6 +15,9 @@ class ARUDataHelper():
         self.year = None
         self.month = None
         self.day = None
+
+        self.lat = None
+        self.lon = None
 
     def input_lab_path(self, path):
         """
@@ -42,6 +46,8 @@ class ARUDataHelper():
         self.month = split_path[-1].split("_")[-2][4:6]
         self.day = split_path[-1].split("_")[-2][6:8]
 
+        self.lat, self.lon = get_location(self.location)
+
         self.to_formatted_filename()
 
     def input_formatted_filename(self, filename):
@@ -68,6 +74,8 @@ class ARUDataHelper():
         self.year = self.date[0:4]
         self.month = self.date[4:6]
         self.day = self.date[6:8]
+
+        self.lat, self.lon = get_location(self.location)
 
         self.lab_path = None
 
@@ -120,9 +128,7 @@ class ARUDataHelper():
         return datetime(year = int(self.year), month = int(self.month), day = int(self.day))
 
     def get_lat(self):
-        #TODO
-        pass
+        return self.lat
 
-    def get_long(self):
-        #TODO
-        pass
+    def get_lon(self):
+        return self.lat
