@@ -53,7 +53,7 @@ def consolidate_outputs(
         df["formatted_filename"] = helper.formatted_filename
 
         # Optional datetime column (useful later)
-        df["recording_date"] = helper.to_datetime()
+        df["recording_datetime"] = helper.to_datetime()
 
         # Optional confidence filter
         #if min_confidence > 0 and "Confidence" in df.columns:
