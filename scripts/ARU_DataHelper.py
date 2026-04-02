@@ -137,4 +137,4 @@ class ARUDataHelper():
         
     def to_datetime(self):
         return datetime(year = int(self.year), month = int(self.month), day = int(self.day), 
-                        hour= int(self.hour), minute = (self.minute))
+                        hour= int(self.hour), minute = int(self.minute))
