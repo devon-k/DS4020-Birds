@@ -2,7 +2,6 @@ from pathlib import Path
 from shutil import copy
 from ARU_DataHelper import ARUDataHelper
 import config
-import multiprocessing
 import time
 
 ROOT = Path(config.LAB_DIRECTORY).resolve() # This string needs to be the address of the lschulte-lab directory
@@ -21,12 +20,12 @@ def get_bird_file_paths(root_directory = ROOT, location : str = None, location_t
     """
 
     # Takes either a string or path, needs to convert str to path.
-    if type(root_directory) == str:
+    if type(root_directory) is str:
        root_directory = Path(root_directory).resolve()
 
     lab_directory = root_directory / "ARU_data"
 
-    if month and type(month) == str:
+    if month and type(month) is str:
         try: int(month)
         except:
             month = {"jan" : 1, "feb" : 2, "mar" : 3, "apr" : 4, "may" : 5, "jun" : 6, "jul" : 7, "aug" : 8, "sep" : 9, "oct" : 10, "nov" : 11, "dec" : 12,
@@ -62,27 +61,50 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FIL
     ex: ARM_CTL_20180301.wav
     """
 
+    destination = Path(destination)
+
     # Create destination if it doesn't exist
     if not destination.is_dir():
         destination.mkdir()
 
     # Handle single paths/strings
-    if  issubclass(type(paths), Path) or type(paths) == str:
-        if ".wav" in str(paths) or ".flac" in str(paths):
-            print(f"Copying {str(paths)}")
-            try:
-                data_helper = ARUDataHelper()
-                data_helper.input_lab_path(paths)
-                new_file_name = data_helper.to_formatted_filename()
+    if issubclass(type(paths), Path) or type(paths) is str:
+        path = Path(paths)
 
-                copy(paths, destination / new_file_name)
+        # Check network access
+        networkOK = False
+
+        while not networkOK:
+            try:
+                networkOK = ROOT.exists()
+            except:
+                networkOK = False
+
+            if not networkOK:
+                print("Error: Lost connection to root directory, trying to reconnect..." ,end ="\r")
+                time.sleep(1)
+
+        if ".wav" in str(path) or ".flac" in str(path):
+            print(f"Copying /{path.parent.parent.name + "/" + path.parent.name + "/" + path.name}", end = "\r")
+
+            data_helper = ARUDataHelper()
+            data_helper.input_lab_path(path)
+            new_file_name = data_helper.to_formatted_filename()
+
+            tempname = destination / (new_file_name + ".tmp")
+            final_path = destination / new_file_name
+
+            try:
+                copy(path, tempname)
+                tempname.rename(final_path)
+
             except Exception as e:
-                print(f"Ran into a problem copying {str(paths)}")
-                print(e)
-                import traceback
-                traceback.print_exc()
+               print(f"Error {e} on {str(path)}")
+                
+            finally:
+                tempname.unlink(missing_ok=True)
         else:
-            print(f"Skipping {str(paths)}, not a compatible audio file.")
+            print(f"Skipping {str(path)}, not a compatible audio file.")
 
     # Handle collections/generators
     else:
@@ -98,20 +120,44 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FIL
                 time.sleep(1)
                 print(f"Downloader is sleeping...{round(time.time() - sleep_time)}", end = "\r")
 
-            if ".wav" in str(path) or ".flac" in str(path):
-                print(f"Copying {str(path)}")
+            # Check network access
+            networkOK = False
+
+            while not networkOK:
                 try:
-                    data_helper = ARUDataHelper()
-                    data_helper.input_lab_path(path)
-                    new_file_name = data_helper.to_formatted_filename()
-                    copy(path, destination / new_file_name)
+                    networkOK = ROOT.exists()
+                except:
+                    networkOK = False
+
+                if not networkOK:
+                    print("Error: Lost connection to root directory, trying to reconnect..." ,end ="\r")
+                    time.sleep(1)
+
+            # Download file
+            if ".wav" in str(path) or ".flac" in str(path):
+                print(f"Copying file {i+1} /{path.parent.parent.name + "/" + path.parent.name + "/" + path.name}", end = "\r")
+
+                data_helper = ARUDataHelper()
+                data_helper.input_lab_path(path)
+                new_file_name = data_helper.to_formatted_filename()
+
+                tempname = destination / (new_file_name + ".tmp")
+                final_path = destination / new_file_name
+
+                if final_path.exists():
+                    i += 1
+                    continue
+
+                try:
+                    copy(path, tempname)
+                    tempname.rename(final_path)
 
                     i += 1
                 except Exception as e:
-                    print(f"Ran into a problem copying {str(path)}")
-                    print(e)
-                    import traceback
-                    traceback.print_exc()
+                    print(f"Error {e} on {str(path)}")
+
+                finally:
+                    tempname.unlink(missing_ok=True)
                     
             else:
                 print(f"Skipping {str(path)}, not a compatible audio file.")
