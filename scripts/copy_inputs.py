@@ -129,7 +129,7 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FIL
             sleep_time = time.time()
             while max_files is not None and len(list(destination.glob("*.flac")) + list(destination.glob("*.wav"))) >= max_files :
                 time.sleep(1)
-                print(f"Maximum number of files in directory, downloader is sleeping...{round(time.time() - sleep_time)}", end = "\r")
+                print(f"Maximum number of files in directory, downloader is sleeping...{round(time.time() - sleep_time)}" + " "*5, end = "\r")
 
             # Check network access
             check_network()
