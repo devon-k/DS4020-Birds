@@ -24,15 +24,14 @@ if len(filtered_labels) < 1:
     raise MissingRequiredElementsError("birdnet_master.csv does not contain data from any audio which has valid human-determined labels")
 
 # Get aggrigated confidence metrics
-reshaping = birdnet_results.pivot_table(    values='confidence',
+aggrigate_confidence = birdnet_results.pivot_table(    values='confidence',
                                             index = ["location", "location_type", "recording_date", "common_name"],
                                             aggfunc= ['sum', 'mean', 'max', 'min'],
                                             fill_value= 0
                                         )
 
-reshaping2 = pd.DataFrame(reshaping)
-reshaping2.columns = ['_'.join(col).strip() for col in reshaping.columns.to_flat_index()]
-reshaping2
+aggrigate_confidence_flat = pd.DataFrame(aggrigate_confidence)
+aggrigate_confidence_flat.columns = ['_'.join(col).strip() for col in aggrigate_confidence.columns.to_flat_index()] # flatten multilayer columns
 
 
 ## ---- Create response values using detections table logic ----
@@ -62,7 +61,7 @@ ungrouped = detections_table.melt(id_vars = ["location", "location_type", "recor
 
 # Create complete dataframe
 combined_df = ungrouped.merge(
-    reshaping2.reset_index(), how="left", 
+    aggrigate_confidence_flat.reset_index(), how="left", 
 )
 
 ## ---- Train classifier ----
