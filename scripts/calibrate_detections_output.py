@@ -26,13 +26,16 @@ if len(filtered_labels) < 1:
 # Get aggrigated confidence metrics
 reshaping = birdnet_results.pivot_table(    values='confidence',
                                             index = ["location", "location_type", "recording_date", "common_name"],
-                                            aggfunc= ['sum', 'mean', 'max'],
+                                            aggfunc= ['sum', 'mean', 'max', 'min'],
                                             fill_value= 0
                                         )
 
 reshaping2 = pd.DataFrame(reshaping)
 reshaping2.columns = ['_'.join(col).strip() for col in reshaping.columns.to_flat_index()]
 reshaping2
+
+
+## ---- Create response values using detections table logic ----
 
 training = filtered_labels
 
@@ -57,9 +60,12 @@ detections_table = grouped.pivot_table(
 
 ungrouped = detections_table.melt(id_vars = ["location", "location_type", "recording_date"], value_vars = species_list)
 
+# Create complete dataframe
 combined_df = ungrouped.merge(
     reshaping2.reset_index(), how="left", 
 )
+
+## ---- Train classifier ----
 
 #encoder = OneHotEncoder() -- As long as we use the same list of bird species for the detections table we 
 #                               shouldn't have to worry about doing proper one-hot encoding
@@ -69,6 +75,7 @@ train_y = combined_df["value"]
 #train_x = encoder.fit_transform(pd.DataFrame(combined_df["common_name"]))
 #train_x = np.concatenate([np.array(combined_df), train_x])
 
+# Create dummy variables, strip out columns we don't need (location, treatment, and date)
 train_x = pd.get_dummies(combined_df.fillna(0).loc[:,["common_name", "sum_confidence", "mean_confidence", "max_confidence"]])
 
 clf.fit(train_x, train_y)
