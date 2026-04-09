@@ -2,11 +2,24 @@ from pathlib import Path
 from shutil import copy
 from ARU_DataHelper import ARUDataHelper
 import config
-import multiprocessing
 import time
 
 ROOT = Path(config.LAB_DIRECTORY).resolve() # This string needs to be the address of the lschulte-lab directory
 DESTINATION = Path(config.INPUTS_DIRECTORY).resolve()
+
+def check_network():
+    networkOK = False
+
+    while not networkOK:
+        try:
+            networkOK = ROOT.exists()
+        except:
+            networkOK = False
+
+        if not networkOK:
+            print("Error: Lost connection to root directory, trying to reconnect..." ,end ="\r")
+            time.sleep(1)
+
 
 def get_bird_file_paths(root_directory = ROOT, location : str = None, location_type : str = None, 
                         year = None, month = None, day : int = None, file_type = None ):
@@ -17,16 +30,16 @@ def get_bird_file_paths(root_directory = ROOT, location : str = None, location_t
 
     The generator currently includes a small number of files (361) which aren't audio.
     I don't think there is a good way around that so it has to be handled by the client 
-    taking accepting the generator.
+    accepting the generator.
     """
 
     # Takes either a string or path, needs to convert str to path.
-    if type(root_directory) == str:
+    if type(root_directory) is str:
        root_directory = Path(root_directory).resolve()
 
     lab_directory = root_directory / "ARU_data"
 
-    if month and type(month) == str:
+    if month and type(month) is str:
         try: int(month)
         except:
             month = {"jan" : 1, "feb" : 2, "mar" : 3, "apr" : 4, "may" : 5, "jun" : 6, "jul" : 7, "aug" : 8, "sep" : 9, "oct" : 10, "nov" : 11, "dec" : 12,
@@ -47,7 +60,7 @@ def get_bird_file_paths(root_directory = ROOT, location : str = None, location_t
 
     return lab_directory.glob(glob_string) #"???/*/*"
 
-def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FILES, max_files = config.MAX_FILES):
+def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FILES, max_files = config.MAX_FILES) -> dict:
     """ Copies a number of files from a collection of paths to a destination folder.
 
     paths can be a path, string, generator, or collection.
@@ -60,29 +73,49 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FIL
     [location]_[location_type]_[yyyymmdd][filetype]
 
     ex: ARM_CTL_20180301.wav
+
+    Returns a collection of path : traceback pairs which suffered an error and failed to download.
     """
+
+    destination = Path(destination)
 
     # Create destination if it doesn't exist
     if not destination.is_dir():
         destination.mkdir()
 
-    # Handle single paths/strings
-    if  issubclass(type(paths), Path) or type(paths) == str:
-        if ".wav" in str(paths) or ".flac" in str(paths):
-            print(f"Copying {str(paths)}")
-            try:
-                data_helper = ARUDataHelper()
-                data_helper.input_lab_path(paths)
-                new_file_name = data_helper.to_formatted_filename()
+    # Create internal error log
+    error_log = {}
 
-                copy(paths, destination / new_file_name)
+    # Handle single paths/strings
+    if issubclass(type(paths), Path) or type(paths) is str:
+        path = Path(paths)
+
+        # Check network access
+        check_network()
+
+        # Download file
+        if ".wav" in str(path) or ".flac" in str(path):
+            print(f"Copying /{path.parent.parent.name + "/" + path.parent.name + "/" + path.name}", end = "\r")
+
+            data_helper = ARUDataHelper()
+            data_helper.input_lab_path(path)
+            new_file_name = data_helper.to_formatted_filename()
+
+            tempname = destination / (new_file_name + ".tmp")
+            final_path = destination / new_file_name
+
+            try:
+                copy(path, tempname)
+                tempname.rename(final_path)
+
             except Exception as e:
-                print(f"Ran into a problem copying {str(paths)}")
-                print(e)
-                import traceback
-                traceback.print_exc()
+               print(f"Error {e} on {str(path)}")
+               error_log[path] = {e}
+                
+            finally:
+                tempname.unlink(missing_ok=True)
         else:
-            print(f"Skipping {str(paths)}, not a compatible audio file.")
+            print(f"Skipping {str(path)}, not a compatible audio file.")
 
     # Handle collections/generators
     else:
@@ -96,25 +129,42 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FIL
             sleep_time = time.time()
             while max_files is not None and len(list(destination.glob("*.flac")) + list(destination.glob("*.wav"))) >= max_files :
                 time.sleep(1)
-                print(f"Downloader is sleeping...{round(time.time() - sleep_time)}", end = "\r")
+                print(f"Maximum number of files in directory, downloader is sleeping...{round(time.time() - sleep_time)}" + " "*5, end = "\r")
 
+            # Check network access
+            check_network()
+
+            # Download file
             if ".wav" in str(path) or ".flac" in str(path):
-                print(f"Copying {str(path)}")
+                print(f"Copying file {i+1} /{path.parent.parent.name + "/" + path.parent.name + "/" + path.name}", end = "\r")
+
+                data_helper = ARUDataHelper()
+                data_helper.input_lab_path(path)
+                new_file_name = data_helper.to_formatted_filename()
+
+                tempname = destination / (new_file_name + ".tmp")
+                final_path = destination / new_file_name
+
+                if final_path.exists():
+                    i += 1
+                    continue
+
                 try:
-                    data_helper = ARUDataHelper()
-                    data_helper.input_lab_path(path)
-                    new_file_name = data_helper.to_formatted_filename()
-                    copy(path, destination / new_file_name)
+                    copy(path, tempname)
+                    tempname.rename(final_path)
 
                     i += 1
                 except Exception as e:
-                    print(f"Ran into a problem copying {str(path)}")
-                    print(e)
-                    import traceback
-                    traceback.print_exc()
+                    print(f"Error {e} on {str(path)}")
+                    error_log[path] = {e}
+
+                finally:
+                    tempname.unlink(missing_ok=True)
                     
             else:
                 print(f"Skipping {str(path)}, not a compatible audio file.")
+
+    return error_log
 
 if __name__ == "__main__":
 
