@@ -36,7 +36,7 @@ def get_location_data(source : Path = COORDS_NETWORK, destination : Path = COORD
         finalName = destination.parent / source.name
         try:
             copy(COORDS_NETWORK, tempName)
-
+            finalName.unlink(missing_ok= True)
             tempName.rename(finalName)
 
         except:
