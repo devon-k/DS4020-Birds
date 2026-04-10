@@ -43,14 +43,17 @@ def consolidate_outputs(
         # Attach metadata columns
         df["location"] = helper.location
         df["location_type"] = helper.location_type
-        df["date"] = helper.date
+        df["date_string"] = helper.date
+        df["time_string"] = helper.time
         df["year"] = helper.year
         df["month"] = helper.month
         df["day"] = helper.day
+        df["hour"] = helper.hour
+        df["minute"] = helper.minute
         df["formatted_filename"] = helper.formatted_filename
 
         # Optional datetime column (useful later)
-        df["recording_date"] = helper.to_datetime()
+        df["recording_datetime"] = helper.to_datetime()
 
         # Optional confidence filter
         #if min_confidence > 0 and "Confidence" in df.columns:
