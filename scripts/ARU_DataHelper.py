@@ -151,5 +151,5 @@ class ARUDataHelper():
         return self.lat
 
     def get_lon(self):
-        return self.lat
+        return self.lon
 
