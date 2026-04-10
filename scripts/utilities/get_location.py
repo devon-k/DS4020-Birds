@@ -12,7 +12,11 @@ try:
 except:
     ARU_DEFAULT_COORDS = {'lat' : 42.0347, 'lon' : -93.6199}
 
+from config import INPUTS_DIRECTORY, LAB_DIRECTORY
+
 PARENT_DIR = Path(__file__).parent.parent.parent.resolve()
+
+ARU_COORDS_ADDRESS = Path(LAB_DIRECTORY) / ARU_COORDS_ADDRESS
 
 if ARU_COORDS_ADDRESS is not None:
     COORDS_NETWORK = Path(ARU_COORDS_ADDRESS)
