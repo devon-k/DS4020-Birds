@@ -11,7 +11,8 @@ Usage:
 Thresholds are configured in config.py (MAX_WIND_MPH, MAX_PRECIP_INCHES).
 Station mappings are in data/station_mapping.json.
 """
-
+from pathlib import Path
+import pandas as pd
 import os
 import json
 import shutil
@@ -26,17 +27,15 @@ from ARU_DataHelper import ARUDataHelper
 import config
 
 # Paths relative to the project root (one level up from scripts/)
-SCRIPT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-INPUTS_DIR = os.path.join(SCRIPT_DIR, "inputs")
-SKIPPED_DIR = os.path.join(SCRIPT_DIR, "skipped")
+SCRIPT_DIR = Path(__file__).resolve().parent.parent
+INPUTS_DIR = SCRIPT_DIR / "inputs"
+DATA_DIR = SCRIPT_DIR / "data"
+OUTPUT_CSV = DATA_DIR / "weather_data.csv"
+
 STATION_MAP_PATH = os.path.join(SCRIPT_DIR, "data", "station_mapping.json")
 DEVICE_MAP_PATH = os.path.join(SCRIPT_DIR, "data", "device_to_site.json")
 
 AUDIO_EXTENSIONS = {'.wav', '.flac'}
-
-# Thresholds — override these in config.py
-MAX_WIND_MPH = getattr(config, 'MAX_WIND_MPH', 20)
-MAX_PRECIP_INCHES = getattr(config, 'MAX_PRECIP_INCHES', 0.5)
 
 # IEM wind data is reported in knots
 KNOTS_TO_MPH = 1.15078
@@ -115,95 +114,82 @@ def fetch_weather(station, network, date):
                 "max_wind_mph": round(gust_kts * KNOTS_TO_MPH, 1),
                 "precip_inches": precip,
             }
-        except (ValueError, TypeError):
-            print(f"    Could not parse weather row: {row}")
+        except:
             return None
 
-    print(f"    No weather data returned for {station} on {date.date()}")
     return None
 
 
-def check_weather(filename, station_mapping, device_mapping):
-    """Check weather for a single audio file.
-    
-    Returns True if the file should be KEPT (acceptable weather).
-    Returns False if it should be SKIPPED (bad weather).
-    """
-    data_helper = ARUDataHelper()
-    data_helper.input_formatted_filename(filename)
-
-    site, mapping = resolve_site(data_helper.location, station_mapping, device_mapping)
-    if mapping is None:
-        print(f"    ⚠ No station mapping for '{data_helper.location}' — keeping by default")
-        print(f"      (If this is a STRIPS recorder, run copy_inputs.py first to rename files)")
-        return True
-
-    station = mapping["station"]
-    network = mapping["network"]
-    date = data_helper.to_datetime()
-
-    print(f"    Site: {data_helper.location} → {site} → Station: {station} ({mapping['county']} Co.) | Date: {date.date()}")
-
-    weather = fetch_weather(station, network, date)
-    if weather is None:
-        print(f"    Could not retrieve weather — keeping by default")
-        return True
-
-    wind = weather["max_wind_mph"]
-    precip = weather["precip_inches"]
-    print(f"    Wind: {wind} mph | Precip: {precip} in")
-
-    if wind > MAX_WIND_MPH:
-        print(f"    ✗ SKIP — wind {wind} mph exceeds {MAX_WIND_MPH} mph threshold")
-        return False
-
-    if precip > MAX_PRECIP_INCHES:
-        print(f"    ✗ SKIP — precip {precip} in exceeds {MAX_PRECIP_INCHES} in threshold")
-        return False
-
-    print(f"    ✓ KEEP")
-    return True
-
-
 def main():
-    os.makedirs(SKIPPED_DIR, exist_ok=True)
     station_mapping = load_station_mapping()
     device_mapping = load_device_mapping()
 
     # Collect audio files first (avoid modifying dir while iterating)
     audio_files = [
-        f for f in os.listdir(INPUTS_DIR)
-        if os.path.isfile(os.path.join(INPUTS_DIR, f))
-        and os.path.splitext(f)[1].lower() in AUDIO_EXTENSIONS
-    ]
+    f.name for f in INPUTS_DIR.iterdir()
+    if f.suffix.lower() in AUDIO_EXTENSIONS
+]
 
     if not audio_files:
         print("No audio files found in inputs/")
         return
 
-    print(f"Found {len(audio_files)} audio file(s) to check")
-    print(f"Thresholds — Max wind: {MAX_WIND_MPH} mph | Max precip: {MAX_PRECIP_INCHES} in\n")
+    print(f"Processing {len(audio_files)} file ...")
 
-    kept = 0
-    skipped = 0
+    unique_requests = {}
+    #Step 1: collect unique (station, date) combonations
+    for filename in audio_files: 
+        helper = ARUDataHelper()
+        helper.input_formatted_filename(filename)
 
-    for filename in audio_files:
-        print(f"[{kept + skipped + 1}/{len(audio_files)}] {filename}")
+        site, mapping = resolve_site(helper.location, station_mapping, device_mapping)
 
-        if check_weather(filename, station_mapping, device_mapping):
-            kept += 1
-        else:
-            src = os.path.join(INPUTS_DIR, filename)
-            dst = os.path.join(SKIPPED_DIR, filename)
-            shutil.copy2(src, dst)
-            os.remove(src)
-            skipped += 1
+        if mapping is None: 
+            continue
+        station  = mapping["station"]
+        network = mapping["network"]
+        date = helper.to_datetime()
 
-        # Be polite to the IEM API
+        key = (station, date)
+
+        unique_requests[key] = {
+            "location":helper.location, 
+            "station": station, 
+            "network": network, 
+            "date": date, 
+            "year": helper.year,
+            "month": helper.month, 
+            "day": helper.day, 
+            "formatted_filename": helper.formatted_filename
+        }
+
+    print(f"Unique station-date combos: {len(unique_requests)}")
+
+    #Step 2: Fetch weather
+    results = []
+
+    for i, ((station, date), meta) in enumerate(unique_requests.items(), start=1): 
+        print(f"[{i}/{len(unique_requests)}] {station} - {date.date()}")
+
+        weather = fetch_weather(station, meta["network"], date)
+
+        if weather: 
+            results.append({
+                **meta, 
+                "max_wind_mph": weather [ "max_wind_mph"], 
+                "precip_inches": weather["precip_inches"]
+            })
         time.sleep(0.5)
 
-    print(f"\nDone — Kept: {kept} | Skipped: {skipped}")
+    df = pd.DataFrame(results)
 
+    OUTPUT_CSV.parent.mkdir(exist_ok = True)
+    df.to_csv(OUTPUT_CSV, index = False)
+
+    print(f"\nSaved weather data to: {OUTPUT_CSV}")
+    print(f"Total rows: {len(df)}")
+
+    
 
 if __name__ == "__main__":
     main()

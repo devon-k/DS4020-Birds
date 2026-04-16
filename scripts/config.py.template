@@ -11,7 +11,4 @@ DELETE_INPUTS = True
 DELETE_INDIVIDUAL_CSVS = False
 APPEND_TO_MASTER = True
 
-# Weather filter thresholds (used by weather_filter.py)
-MAX_WIND_MPH = 20
-MAX_PRECIP_INCHES = 0.5
 
