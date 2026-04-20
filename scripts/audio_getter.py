@@ -8,7 +8,7 @@ print("_"*40)
 
 print("\nType 'Help' for instructions\n")
 
-name = input("Copy paste the formatted_filename':" ).replace(".csv", "").upper()
+name = input("Copy paste the formatted_filename':" ).replace(".csv", " ").upper()
 
 if "HELP" in name:
     print("""There are no rules, good luck""")
