@@ -7,7 +7,7 @@ library(scales)
 
 
 
-df <- read.csv("birdnet_master.csv")
+df <- read.csv("compiled/birdnet_master2.csv")
 
 
 
@@ -15,7 +15,7 @@ data <- df %>%
   filter(month %in% c(6,7,8), confidence > 0.1) %>%
   mutate(recording_date = as.Date(recording_date),
          conf_pct = confidence * 100,
-         week = format(recording_date, "%U")) %>%
+         week = format(recording_date, "%U"))
 
 
 #  PREP DATA
