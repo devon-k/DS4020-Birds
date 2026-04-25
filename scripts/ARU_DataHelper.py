@@ -1,5 +1,6 @@
 from pathlib import Path
 from datetime import datetime
+from utilities.get_location import get_location
 
 class ARUDataHelper():
     """A helper object which collects and translates information about STRIPS ARU audio files.
@@ -35,6 +36,9 @@ class ARUDataHelper():
         self.hour = None
         self.minute = None
 
+        self.lat = None
+        self.lon = None
+
     def input_lab_path(self, path):
         """Takes a path for a STRIPS ARU audio file to load the dataHelper.
         
@@ -59,6 +63,8 @@ class ARUDataHelper():
         self.hour = filename.split("_")[-1][0:2]
         self.minute = filename.split("_")[-1][2:4]
 
+        self.lat, self.lon = get_location(self.location)
+
         self.to_formatted_filename()
 
     def input_formatted_filename(self, filename):
@@ -81,6 +87,8 @@ class ARUDataHelper():
         self.month = self.date[4:6]
         self.day = self.date[6:8]
 
+        self.lat, self.lon = get_location(self.location)
+        
         try:
             self.time = split_filename[3].split('.')[0]
             self.hour = self.time[0:2]
@@ -138,3 +146,10 @@ class ARUDataHelper():
     def to_datetime(self):
         return datetime(year = int(self.year), month = int(self.month), day = int(self.day), 
                         hour= int(self.hour), minute = int(self.minute))
+
+    def get_lat(self):
+        return self.lat
+
+    def get_lon(self):
+        return self.lon
+

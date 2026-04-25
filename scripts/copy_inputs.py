@@ -3,6 +3,7 @@ from shutil import copy
 from ARU_DataHelper import ARUDataHelper
 import config
 import time
+from utilities.get_location import get_location_data
 
 ROOT = Path(config.LAB_DIRECTORY).resolve() # This string needs to be the address of the lschulte-lab directory
 DESTINATION = Path(config.INPUTS_DIRECTORY).resolve()
@@ -167,6 +168,6 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FIL
     return error_log
 
 if __name__ == "__main__":
-
+    get_location_data()
     file_paths = get_bird_file_paths()
     copy_bird_audio(file_paths)
