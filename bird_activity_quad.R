@@ -72,7 +72,7 @@ data <- data %>%
 where_data <- data %>%
   group_by(common_name, trt) %>%
   summarise(avg_conf = sum(confidence)/length(levels(factor(formatted_filename))), .groups = "drop") |> group_by(common_name) |> 
-  mutate(standardized_conf = ((avg_conf - mean(avg_conf))/sd(avg_conf)) )
+  mutate(standardized_conf = min(((avg_conf - mean(avg_conf))/sd(avg_conf)),6) )
 
 p_where <- plot_ly(
   where_data,
@@ -94,20 +94,15 @@ p_where <- plot_ly(
 when_data <- data %>%
   group_by(common_name, week, trt) %>%
   summarise(avg_conf = sum(confidence)/length(levels(factor(formatted_filename))), .groups = "drop") |> group_by(common_name) |> 
-  mutate(standardized_conf = ((avg_conf - mean(avg_conf))/sd(avg_conf)) )
+  mutate(standardized_conf = (avg_conf - mean(avg_conf)) / sd(avg_conf) )
 
 p = when_data %>% group_by(trt) %>% group_map( ~plot_ly(.,
   x = ~week,
   y = ~common_name,
   z = ~standardized_conf,
   type = "heatmap",
-  colorscale = "Blues"
-) %>%
-  layout(
-    title = paste("Activity Over Weeks -", trt),
-    xaxis = list(title = "Week"),
-    yaxis = list(title = "Species")
-  )
+  colorscale = "Turbo"
+) 
 )
 
 # -------------------------------
@@ -121,4 +116,31 @@ subplot(
   titleY = TRUE
 )
 
-p[[1]]
+
+p[[1]] %>%
+  layout(
+    title = paste("Activity Over Weeks - CRP"),
+    xaxis = list(title = "Week"),
+    yaxis = list(title = "Species")
+  )
+
+p[[2]] %>%
+  layout(
+    title = paste("Activity Over Weeks - CTL"),
+    xaxis = list(title = "Week"),
+    yaxis = list(title = "Species")
+  )
+
+p[[3]] %>%
+  layout(
+    title = paste("Activity Over Weeks - EXP"),
+    xaxis = list(title = "Week"),
+    yaxis = list(title = "Species")
+  )
+
+p[[4]] %>%
+  layout(
+    title = paste("Activity Over Weeks - TER"),
+    xaxis = list(title = "Week"),
+    yaxis = list(title = "Species")
+  )

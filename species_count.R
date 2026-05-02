@@ -40,7 +40,7 @@ type_conversion <- c("CRP" = "CRP",
                       "EXPN" = "EXP",
                       "EXPS" = "EXP",
                       "TER" = "TER",
-                      "WET" = "WET" )
+                      "WET" = "CRP" )
 
 data = data |>
   group_by(location, location_type, recording_date)|> mutate(detections = n()) |> ungroup() |> 
