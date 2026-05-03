@@ -2,9 +2,12 @@
 library(dplyr)
 library(plotly)
 library(patchwork)
+library(ggplot2)
 
 
 df <- read.csv("compiled/birdnet_master_full.csv")
+
+colnames(df)
 
 # -------------------------------
 # PREP DATA
@@ -14,11 +17,12 @@ data <- df |> #[sample(nrow(df), 100000),] %>%
     confidence >= 0.5,
     !is.na(common_name),
     !is.na(location_type),
-    !is.na(recording_date)
+    !is.na(recording_datetime)
   ) %>%
   mutate(
-    recording_date = as.Date(recording_date),
-    week = as.numeric(format(recording_date, "%U"))
+    recording_date = as.Date(recording_datetime),
+    week = as.numeric(format(recording_date, "%U")),
+    week = as.Date("2024-01-01") + (week - 1) * 7
   )
 
 data = data |> mutate(
@@ -50,97 +54,97 @@ data = data |>
           # date = factor(date)
         )
 
-# data = data |> group_by(week, common_name) |> 
-#   mutate(confidence =  sum(confidence)) |> ungroup() |> 
-#   group_by(common_name) |> 
-#   mutate(confidence = confidence/ max(confidence))
-
 # -------------------------------
 # TOP SPECIES (KEEP CLEAN)
 # -------------------------------
 top_species <- data %>%
   count(common_name, sort = TRUE) %>%
-  slice_head(n = 60) %>%
+  slice_head(n = 30) %>%
   pull(common_name)
 
-data <- data %>%
+top_data <- data %>%
   filter(common_name %in% top_species)
-
-# -------------------------------
-# WHERE (TREATMENT)
-# -------------------------------
-where_data <- data %>%
-  group_by(common_name, trt) %>%
-  summarise(avg_conf = sum(confidence)/length(levels(factor(formatted_filename))), .groups = "drop") |> group_by(common_name) |> 
-  mutate(standardized_conf = min(((avg_conf - mean(avg_conf))/sd(avg_conf)),6) )
-
-p_where <- plot_ly(
-  where_data,
-  x = ~trt,
-  y = ~common_name,
-  z = ~standardized_conf,
-  type = "heatmap",
-  colorscale = "Blues"
-) %>%
-  layout(
-    title = "WHERE: Activity by Treatment",
-    xaxis = list(title = "Treatment"),
-    yaxis = list(title = "Species")
-  )
 
 # -------------------------------
 # WHEN (TIME)
 # -------------------------------
-when_data <- data %>%
+when_data <- top_data %>%
   group_by(common_name, week, trt) %>%
   summarise(avg_conf = sum(confidence)/length(levels(factor(formatted_filename))), .groups = "drop") |> group_by(common_name) |> 
-  mutate(standardized_conf = (avg_conf - mean(avg_conf)) / sd(avg_conf) )
+  mutate(standardized_conf =  (avg_conf - min(avg_conf)) / (max(avg_conf) - min(avg_conf)) 
+         )
 
-p = when_data %>% group_by(trt) %>% group_map( ~plot_ly(.,
-  x = ~week,
-  y = ~common_name,
-  z = ~standardized_conf,
-  type = "heatmap",
-  colorscale = "Turbo"
-) 
+isu_theme =   theme(
+  panel.background = element_rect(fill = "#D0D3D4", color = NA),
+  plot.background  = element_rect(fill = "grey20", color = NA),
+  axis.text.x      = element_text(angle = 90, hjust = 0.3, color = "white"), 
+  axis.text.y      = element_text(color = "white"),
+  axis.title.x     = element_text(color = "#CAC7A7"),
+  axis.title.y     = element_text(color = "#CAC7A7"),
+  plot.title       = element_text(color = "white", size = 16, face = "bold"),
+  
+  legend.position = "none",
+  legend.background = element_rect(fill = "#D0D3D4"),
+  legend.key = element_rect(fill = "white"),
+  legend.text = element_text(color = "grey20", size = 6, face = "italic"),
+  legend.title = element_text(color = "grey20", size = 8, face = "bold")
+)
+
+p = when_data %>% group_by(trt) %>% 
+  group_map( ~ggplot(., aes(
+                      x = week,
+                      y = common_name,
+                      group_by = common_name,
+                      fill = standardized_conf) ) + 
+               geom_tile() + 
+               scale_fill_gradient(
+                 low = "#7C2529",
+                 high = "white"
+               ) + isu_theme +
+               scale_x_date(
+                 date_labels = "%b",
+                 date_breaks = "1 month",
+                 # n.breaks = 12
+               )
 )
 
 # -------------------------------
-# COMBINE (SIDE BY SIDE)
+# Output
 # -------------------------------
-subplot(
-  p_where, p_when,
-  nrows = 1,
-  shareY = TRUE,
-  titleX = TRUE,
-  titleY = TRUE
-)
 
+# Parameters for outputs
+out_height = 1080
+out_width = 1080
+out_scale = 1.5
 
-p[[1]] %>%
-  layout(
-    title = paste("Activity Over Weeks - CRP"),
-    xaxis = list(title = "Week"),
-    yaxis = list(title = "Species")
+p[[1]] + labs(
+    title = paste("Seasonal Avian Activity - CRP"),
+    fill = "Activity",
+    x = "Month",
+    y = "Species"
   )
+ggsave("Activity - CRP.png", width = out_width, height = out_height, units = "px", scale = out_scale)
 
-p[[2]] %>%
-  layout(
-    title = paste("Activity Over Weeks - CTL"),
-    xaxis = list(title = "Week"),
-    yaxis = list(title = "Species")
+p[[2]] + labs(
+    title = paste("Seasonal Avian Activity - CTL"),
+    fill = "Activity",
+    x = "Month",
+    y = "Species"
   )
+ggsave("Activity - CTL.png", width = out_width, height = out_height, units = "px", scale = out_scale)
 
-p[[3]] %>%
-  layout(
-    title = paste("Activity Over Weeks - EXP"),
-    xaxis = list(title = "Week"),
-    yaxis = list(title = "Species")
+p[[3]] + labs(
+    title = paste("Seasonal Avian Activity - EXP"),
+    fill = "Activity",
+    x = "Month",
+    y = "Species"
   )
+ggsave("Activity - EXP.png", width = out_width, height = out_height, units = "px", scale = out_scale)
 
-p[[4]] %>%
-  layout(
-    title = paste("Activity Over Weeks - TER"),
-    xaxis = list(title = "Week"),
-    yaxis = list(title = "Species")
+p[[4]] + labs(
+    title = paste("Seasonal Avian Activity - TER"),
+    fill = "Activity",
+    x = "Month",
+    y = "Species"
   )
+ggsave("Activity - TER.png", width = out_width, height = out_height, units = "px", scale = out_scale)
