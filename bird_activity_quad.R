@@ -1,6 +1,6 @@
 
 library(dplyr)
-library(plotly)
+# library(plotly)
 library(patchwork)
 library(ggplot2)
 
@@ -57,10 +57,21 @@ data = data |>
 # -------------------------------
 # TOP SPECIES (KEEP CLEAN)
 # -------------------------------
-top_species <- data %>%
-  count(common_name, sort = TRUE) %>%
-  slice_head(n = 30) %>%
-  pull(common_name)
+top_species <- c("Field Sparrow", 
+                 "Henslow's Sparrow", 
+                 "Dickcissel", 
+                 "Northern Bobwhite", 
+                 "Yellow-billed Cuckoo",
+                 "Red-headed Woodpecker",
+                 "Eastern Kingbird",
+                 "Willow Flycatcher",
+                 "Brown Thrasher",
+                 "Eastern Meadowlark",
+                 "Common Grackle"
+                 ) # data %>%
+  # count(common_name, sort = TRUE) %>%
+  # slice_head(n = 30) %>%
+  # pull(common_name)
 
 top_data <- data %>%
   filter(common_name %in% top_species)
@@ -77,7 +88,7 @@ when_data <- top_data %>%
 isu_theme =   theme(
   panel.background = element_rect(fill = "#D0D3D4", color = NA),
   plot.background  = element_rect(fill = "grey20", color = NA),
-  axis.text.x      = element_text(angle = 90, hjust = 0.3, color = "white"), 
+  axis.text.x      = element_text(angle = 90, hjust = .6, color = "white"), 
   axis.text.y      = element_text(color = "white"),
   axis.title.x     = element_text(color = "#CAC7A7"),
   axis.title.y     = element_text(color = "#CAC7A7"),
@@ -100,13 +111,47 @@ p = when_data %>% group_by(trt) %>%
                scale_fill_gradient(
                  low = "#7C2529",
                  high = "white"
-               ) + isu_theme +
+               )  +
                scale_x_date(
                  date_labels = "%b",
                  date_breaks = "1 month",
                  # n.breaks = 12
-               )
+               ) + isu_theme
 )
+
+p2 = when_data %>% ggplot(., aes(
+    x = week,
+    y = common_name,
+    group_by = common_name,
+    fill = standardized_conf) ) + 
+      geom_tile() + 
+      scale_fill_gradient(
+        low = "#7C2529",
+        high = "white"
+      )  +
+      scale_x_date(
+        date_labels = "%b",
+        date_breaks = "1 month",
+        # n.breaks = 12
+      ) + isu_theme
+
+p3 = when_data %>% 
+ ggplot(., aes(
+    x = week,
+    y = common_name,
+    group_by = common_name,
+    fill = standardized_conf) ) + 
+      geom_tile() + 
+      scale_fill_gradient(
+        low = "#7C2529",
+        high = "white"
+      ) +
+      scale_x_date(
+        date_labels = "%b",
+        date_breaks = "1 month"
+      ) + 
+  isu_theme + 
+  facet_wrap(~trt)
 
 # -------------------------------
 # Output
@@ -116,6 +161,14 @@ p = when_data %>% group_by(trt) %>%
 out_height = 1080
 out_width = 1080
 out_scale = 1.5
+
+p2 + labs(
+  title = paste("Seasonal Avian Activity"),
+  fill = "Activity",
+  x = "Month",
+  y = "Species"
+)
+ggsave("Activity - Seasonal.png", width = out_width, height = out_height, units = "px", scale = out_scale)
 
 p[[1]] + labs(
     title = paste("Seasonal Avian Activity - CRP"),
@@ -148,3 +201,100 @@ p[[4]] + labs(
     y = "Species"
   )
 ggsave("Activity - TER.png", width = out_width, height = out_height, units = "px", scale = out_scale)
+
+p3 + labs(
+  title = paste("Species Seasonal Activity by TRT"),
+  fill = "Activity",
+  x = "Month",
+  y = "Species"
+)
+ggsave("Activity by trt.png", width = out_width + 400, height = out_height, units = "px", scale = out_scale)
+
+# Loop for printing full list
+
+sorted_species = data %>% pull(common_name) %>% 
+  unique() %>% sort()
+
+for (i in seq(from = 30, to = length(sorted_species), by = 30)){
+  
+  top_species <- sorted_species[(i-29):i]
+
+  top_data <- data %>%
+    filter(common_name %in% top_species)
+  
+  when_data <- top_data %>%
+    group_by(common_name, week, trt) %>%
+    summarise(avg_conf = sum(confidence)/length(levels(factor(formatted_filename))), .groups = "drop") |> group_by(common_name) |> 
+    mutate(standardized_conf =  (avg_conf - min(avg_conf)) / (max(avg_conf) - min(avg_conf))
+    ) %>% arrange(common_name, decreasing = F) %>% group_by(week) %>%  filter(count(common_name) > 1)
+  
+  if (i > 30){
+    title = "Species Seasonal Activity cont."
+  }
+  else{
+    title = "Species Seasonal Activity"
+  }
+  
+  p2 = when_data %>% ggplot(., aes(
+    x = week,
+    y = factor(common_name, levels = top_species %>% sort(decreasing=T)),
+    group_by = common_name,
+    fill = standardized_conf) ) + 
+    geom_tile() + 
+    scale_fill_gradient(
+      low = "#7C2529",
+      high = "white"
+    )  +
+    scale_x_date(
+      date_labels = "%b",
+      date_breaks = "1 month",
+      # n.breaks = 12
+    ) + isu_theme + labs(
+      title = title,
+      fill = "Activity",
+      x = "Month",
+      y = "Species"
+    )
+  
+  ggsave(paste("Species Activity ", i/30, ".png", sep = ""), plot = p2, width = out_width + 400, height = out_height, units = "px", scale = out_scale)
+}
+
+# -------------------------------
+# WHEN (TIME)
+# -------------------------------
+when_data <- top_data %>%
+  group_by(common_name, week, trt) %>%
+  summarise(avg_conf = sum(confidence)/length(levels(factor(formatted_filename))), .groups = "drop") |> group_by(common_name) |> 
+  mutate(standardized_conf =  (avg_conf - min(avg_conf)) / (max(avg_conf) - min(avg_conf)) 
+  )
+
+# -------------------------------
+# WHERE (Location)
+# -------------------------------
+where_data <- top_data %>%
+  group_by(common_name, trt) %>%
+  summarise(avg_conf = sum(confidence)/length(levels(factor(formatted_filename))), .groups = "drop") |> group_by(common_name) |> 
+  mutate(standardized_conf =  (avg_conf - min(avg_conf)) / (max(avg_conf) - min(avg_conf)) 
+  )
+
+p2 = where_data %>% 
+  ggplot(., aes(
+    x = trt,
+    y = common_name,
+    group_by = common_name,
+    fill = standardized_conf) ) + 
+  geom_tile() + 
+  scale_fill_gradient(
+    low = "#7C2529",
+    high = "white"
+  ) +
+  isu_theme + theme(panel.background  = element_rect(fill = "grey20", color = NA),)
+
+p2 + labs(
+  title = paste("Species Activity by TRT"),
+  fill = "Activity",
+  x = "Treatment",
+  y = "Species"
+)
+ggsave("Total Activity by trt.png", width = out_width-400, height = out_height, units = "px", scale = out_scale)
+
