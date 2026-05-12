@@ -14,13 +14,11 @@ except:
 
 from config import INPUTS_DIRECTORY, LAB_DIRECTORY
 
-PARENT_DIR = Path(__file__).parent.parent.parent.resolve()
-
 ARU_COORDS_ADDRESS = Path(LAB_DIRECTORY) / ARU_COORDS_ADDRESS
 
 if ARU_COORDS_ADDRESS is not None:
     COORDS_NETWORK = Path(ARU_COORDS_ADDRESS)
-    COORDS_LOCAL = PARENT_DIR / INPUTS_DIRECTORY / COORDS_NETWORK.name
+    COORDS_LOCAL = Path(INPUTS_DIRECTORY) / COORDS_NETWORK.name
 else:
     COORDS_NETWORK = None
     COORDS_LOCAL = None
@@ -54,11 +52,10 @@ def get_location(location, zone = 15):
 
     try:
         local_coords = pd.read_csv(COORDS_LOCAL, index_col="site")
+        easting = local_coords.at[location, "nad83_easting_centroid"]
+        northing = local_coords.at[location, "nad83_northing_centroid"]
     except:
         print("No usable coordinate index, loading default coordinates")
         return ARU_DEFAULT_COORDS["lat"], ARU_DEFAULT_COORDS["lon"]
-    
-    easting = local_coords.at[location, "nad83_easting_centroid"]
-    northing = local_coords.at[location, "nad83_northing_centroid"]
 
     return utmToLatLong(utmNorthing=northing, utmEasting=easting, utmZone=zone)

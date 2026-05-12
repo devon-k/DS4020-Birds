@@ -96,7 +96,7 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FIL
 
         # Download file
         if ".wav" in str(path) or ".flac" in str(path):
-            print(f"Copying /{path.parent.parent.name + "/" + path.parent.name + "/" + path.name}", end = "\r")
+            print(f"Copying /{path.parent.parent.name + '/' + path.parent.name + '/' + path.name}", end = "\r")
 
             data_helper = ARUDataHelper()
             data_helper.input_lab_path(path)
@@ -137,7 +137,7 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FIL
 
             # Download file
             if ".wav" in str(path) or ".flac" in str(path):
-                print(f"Copying file {i+1} /{path.parent.parent.name + "/" + path.parent.name + "/" + path.name}", end = "\r")
+                print(f"Copying file {i+1} /{path.parent.parent.name + '/' + path.parent.name + '/' + path.name}", end = "\r")
 
                 data_helper = ARUDataHelper()
                 data_helper.input_lab_path(path)
@@ -170,4 +170,5 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FIL
 if __name__ == "__main__":
     get_location_data()
     file_paths = get_bird_file_paths()
-    copy_bird_audio(file_paths)
+    #copy_bird_audio(file_paths)
+    print(len(list(file_paths)))

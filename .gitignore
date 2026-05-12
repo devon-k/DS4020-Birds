@@ -10,3 +10,4 @@ skipped/
 
 # Keep output CSVs untracked
 *.csv
+*.zip
