@@ -4,7 +4,7 @@ library(plotly)
 library(patchwork)
 
 
-df <- read.csv("compiled/birdnet_master_full.csv")
+df <- read.csv("../compiled/birdnet_master.csv")
 
 # -------------------------------
 # PREP DATA

@@ -5,7 +5,7 @@ library(patchwork)
 library(ggplot2)
 
 
-df <- read.csv("compiled/birdnet_master_full.csv")
+df <- read.csv("../compiled/birdnet_master.csv")
 
 colnames(df)
 
@@ -168,7 +168,7 @@ p2 + labs(
   x = "Month",
   y = "Species"
 )
-ggsave("Activity - Seasonal.png", width = out_width, height = out_height, units = "px", scale = out_scale)
+ggsave("graphs and charts/Activity - Seasonal.png", width = out_width, height = out_height, units = "px", scale = out_scale)
 
 p[[1]] + labs(
     title = paste("Seasonal Avian Activity - CRP"),
@@ -176,7 +176,7 @@ p[[1]] + labs(
     x = "Month",
     y = "Species"
   )
-ggsave("Activity - CRP.png", width = out_width, height = out_height, units = "px", scale = out_scale)
+ggsave("graphs and charts/Activity - CRP.png", width = out_width, height = out_height, units = "px", scale = out_scale)
 
 p[[2]] + labs(
     title = paste("Seasonal Avian Activity - CTL"),
@@ -184,7 +184,7 @@ p[[2]] + labs(
     x = "Month",
     y = "Species"
   )
-ggsave("Activity - CTL.png", width = out_width, height = out_height, units = "px", scale = out_scale)
+ggsave("graphs and charts/Activity - CTL.png", width = out_width, height = out_height, units = "px", scale = out_scale)
 
 p[[3]] + labs(
     title = paste("Seasonal Avian Activity - EXP"),
@@ -192,7 +192,7 @@ p[[3]] + labs(
     x = "Month",
     y = "Species"
   )
-ggsave("Activity - EXP.png", width = out_width, height = out_height, units = "px", scale = out_scale)
+ggsave("graphs and charts/Activity - EXP.png", width = out_width, height = out_height, units = "px", scale = out_scale)
 
 p[[4]] + labs(
     title = paste("Seasonal Avian Activity - TER"),
@@ -200,7 +200,7 @@ p[[4]] + labs(
     x = "Month",
     y = "Species"
   )
-ggsave("Activity - TER.png", width = out_width, height = out_height, units = "px", scale = out_scale)
+ggsave("graphs and charts/Activity - TER.png", width = out_width, height = out_height, units = "px", scale = out_scale)
 
 p3 + labs(
   title = paste("Species Seasonal Activity by TRT"),
@@ -208,7 +208,7 @@ p3 + labs(
   x = "Month",
   y = "Species"
 )
-ggsave("Activity by trt.png", width = out_width + 400, height = out_height, units = "px", scale = out_scale)
+ggsave("graphs and charts/Activity by trt.png", width = out_width + 400, height = out_height, units = "px", scale = out_scale)
 
 # Loop for printing full list
 
@@ -296,5 +296,5 @@ p2 + labs(
   x = "Treatment",
   y = "Species"
 )
-ggsave("Total Activity by trt.png", width = out_width-400, height = out_height, units = "px", scale = out_scale)
+ggsave("graphs and charts/Total Activity by trt.png", width = out_width-400, height = out_height, units = "px", scale = out_scale)
 

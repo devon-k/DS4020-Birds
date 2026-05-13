@@ -5,7 +5,7 @@ library(patchwork)
 library(ggplot2)
 
 
-df <- read.csv("compiled/birdnet_master_full.csv")
+df <- read.csv("../compiled/birdnet_master.csv")
 
 # -------------------------------
 # PREP DATA
@@ -78,14 +78,14 @@ data |> group_by(trt, common_name) |> summarize(unique_detections = length(uniqu
   ggplot(aes(x = trt, y = unique_detections) ) + 
   geom_col(fill = "#7C2529") + isu_theme + 
   labs(title = "Species per Treatment", y = "Unique Species Detected", x = "Month")
-ggsave("Species by treatment.png", width = 940, height = 720, units = "px", scale = 1.5)
+ggsave("graphs and charts/Species by treatment.png", width = 940, height = 720, units = "px", scale = 1.5)
 
 data |> group_by(location, common_name) |> summarize(unique_detections = length(unique(common_name)) ) |> 
   ggplot(aes(x = location, y = unique_detections) ) + 
   geom_col(fill = "#7C2529") + isu_theme + 
   labs(title = "Species by Location", y = "Unique Species Detected", x = "Month") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
-ggsave("Species by Location.png", width = 940, height = 720, units = "px", scale = 1.5)
+ggsave("graphs and charts/Species by Location.png", width = 940, height = 720, units = "px", scale = 1.5)
 
 data |> group_by(week, common_name) |> summarize(unique_detections = length(unique(common_name)) ) |>
   ggplot(aes(x = week, y = unique_detections) ) + 
@@ -95,7 +95,7 @@ data |> group_by(week, common_name) |> summarize(unique_detections = length(uniq
     date_labels = "%b",
     date_breaks = "1 month",
   )
-ggsave("Species by Week.png", width = 940, height = 720, units = "px", scale = 1.5)
+ggsave("graphs and charts/Species by Week.png", width = 940, height = 720, units = "px", scale = 1.5)
 
 data |> group_by(week, trt, common_name) |> summarize(unique_detections = length(unique(common_name)) ) |>
   ggplot(aes(x = week, y = unique_detections) ) + 
@@ -105,5 +105,5 @@ data |> group_by(week, trt, common_name) |> summarize(unique_detections = length
     date_labels = "%b",
     date_breaks = "1 month",
   ) + theme(axis.text.x = element_text(angle = 90, hjust = 0.3, color = "white"))
-ggsave("Species by treatment by week.png", width = 940, height = 720, units = "px", scale = 1.5)
+ggsave("graphs and charts/Species by treatment by week.png", width = 940, height = 720, units = "px", scale = 1.5)
 
