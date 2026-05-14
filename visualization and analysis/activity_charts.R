@@ -1,18 +1,14 @@
 
 library(dplyr)
-# library(plotly)
-library(patchwork)
 library(ggplot2)
 
 
 df <- read.csv("../compiled/birdnet_master.csv")
 
-colnames(df)
-
 # -------------------------------
 # PREP DATA
 # -------------------------------
-data <- df |> #[sample(nrow(df), 100000),] %>%
+data <- df |>
   filter(
     confidence >= 0.5,
     !is.na(common_name),
@@ -55,7 +51,7 @@ data = data |>
         )
 
 # -------------------------------
-# TOP SPECIES (KEEP CLEAN)
+# TOP SPECIES
 # -------------------------------
 top_species <- c("Field Sparrow", 
                  "Henslow's Sparrow", 
@@ -77,7 +73,7 @@ top_data <- data %>%
   filter(common_name %in% top_species)
 
 # -------------------------------
-# WHEN (TIME)
+# Activity over Time
 # -------------------------------
 when_data <- top_data %>%
   group_by(common_name, week, trt) %>%
@@ -115,7 +111,6 @@ p = when_data %>% group_by(trt) %>%
                scale_x_date(
                  date_labels = "%b",
                  date_breaks = "1 month",
-                 # n.breaks = 12
                ) + isu_theme
 )
 
@@ -132,7 +127,6 @@ p2 = when_data %>% ggplot(., aes(
       scale_x_date(
         date_labels = "%b",
         date_breaks = "1 month",
-        # n.breaks = 12
       ) + isu_theme
 
 p3 = when_data %>% 
@@ -210,7 +204,9 @@ p3 + labs(
 )
 ggsave("graphs and charts/Activity by trt.png", width = out_width + 400, height = out_height, units = "px", scale = out_scale)
 
+# -------------------------------
 # Loop for printing full list
+# -------------------------------
 
 sorted_species = data %>% pull(common_name) %>% 
   unique() %>% sort()
@@ -256,20 +252,11 @@ for (i in seq(from = 30, to = length(sorted_species), by = 30)){
       y = "Species"
     )
   
-  ggsave(paste("Species Activity ", i/30, ".png", sep = ""), plot = p2, width = out_width + 400, height = out_height, units = "px", scale = out_scale)
+  ggsave(paste("graphs and charts/Species Activity ", i/30, ".png", sep = ""), plot = p2, width = out_width + 400, height = out_height, units = "px", scale = out_scale)
 }
 
 # -------------------------------
-# WHEN (TIME)
-# -------------------------------
-when_data <- top_data %>%
-  group_by(common_name, week, trt) %>%
-  summarise(avg_conf = sum(confidence)/length(levels(factor(formatted_filename))), .groups = "drop") |> group_by(common_name) |> 
-  mutate(standardized_conf =  (avg_conf - min(avg_conf)) / (max(avg_conf) - min(avg_conf)) 
-  )
-
-# -------------------------------
-# WHERE (Location)
+# Activity by Treatment
 # -------------------------------
 where_data <- top_data %>%
   group_by(common_name, trt) %>%
@@ -297,4 +284,53 @@ p2 + labs(
   y = "Species"
 )
 ggsave("graphs and charts/Total Activity by trt.png", width = out_width-400, height = out_height, units = "px", scale = out_scale)
+
+
+# -------------------------------
+# Loop for printing full list
+# -------------------------------
+
+
+sorted_species = data %>% pull(common_name) %>% 
+  unique() %>% sort()
+
+for (i in seq(from = 30, to = length(sorted_species), by = 30)){
+  
+  top_species <- sorted_species[(i-29):i]
+  
+  top_data <- data %>%
+    filter(common_name %in% top_species)
+  
+  where_data <- top_data %>%
+    group_by(common_name, trt) %>%
+    summarise(avg_conf = sum(confidence)/length(levels(factor(formatted_filename))), .groups = "drop") |> group_by(common_name) |> 
+    mutate(standardized_conf =  (avg_conf - min(avg_conf)) / (max(avg_conf) - min(avg_conf))
+    ) %>% arrange(common_name, decreasing = F)
+  
+  if (i > 30){
+    title = "Species Activity by Trt cont."
+  }
+  else{
+    title = "Species Activity by Trt"
+  }
+  
+  p2 = where_data %>% 
+    ggplot(., aes(
+      x = trt,
+      y = common_name,
+      fill = standardized_conf) ) + 
+    geom_tile() + 
+    scale_fill_gradient(
+      low = "#7C2529",
+      high = "white"
+    ) +
+    isu_theme + theme(panel.background  = element_rect(fill = "grey20", color = NA), plot.title = element_text(hjust = 1)) + labs(
+    title = paste(title),
+    fill = "Activity",
+    x = "Treatment",
+    y = "Species"
+  )
+  
+  ggsave(paste("graphs and charts/Total Activity by trt ", i/30, ".png", sep = ""), plot = p2, width = out_width-400, height = out_height, units = "px", scale = out_scale)
+}
 

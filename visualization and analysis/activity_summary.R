@@ -5,15 +5,11 @@ library(ggplot2)
 library(patchwork)
 library(scales)
 
-
-
 df <- read.csv("../compiled/birdnet_master.csv")
-
-
 
 data <- df %>%
   filter(month %in% c(6,7,8), confidence > 0.1) %>%
-  mutate(recording_date = as.Date(recording_date),
+  mutate(recording_date = as.Date(recording_datetime),
          conf_pct = confidence * 100,
          week = format(recording_date, "%U"))
 
@@ -23,12 +19,10 @@ data <- df %>%
 data <- df %>%
   filter(month %in% c(6,7,8), confidence > 0.1) %>%
   mutate(
-    recording_date = as.Date(recording_date),
+    recording_date = as.Date(recording_datetime),
     conf_pct = confidence * 100,
     week = format(recording_date, "%U")
   )
-
-
 
 
 
