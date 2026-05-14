@@ -1,8 +1,9 @@
 from pathlib import Path
 from datetime import datetime
+from utilities.get_location import get_location
 
 class ARUDataHelper():
-    """A helper object which collects and translates information about ARU audio files.
+    """A helper object which collects and translates information about STRIPS ARU audio files.
 
     Used extensively by the ARU Bird Audio project to pass information through the pipeline.
 
@@ -35,8 +36,15 @@ class ARUDataHelper():
         self.hour = None
         self.minute = None
 
+        self.lat = None
+        self.lon = None
+
     def input_lab_path(self, path):
-        """Takes a path for an ARU birds audio file to load the dataHelper."""
+        """Takes a path for a STRIPS ARU audio file to load the dataHelper.
+        
+        The format of compatible paths are <site> / <sub_site_type> / <audio_file>
+        
+        """
 
         if type(path) == str:
             path = Path(path)
@@ -55,10 +63,15 @@ class ARUDataHelper():
         self.hour = filename.split("_")[-1][0:2]
         self.minute = filename.split("_")[-1][2:4]
 
+        self.lat, self.lon = get_location(self.location)
+
         self.to_formatted_filename()
 
     def input_formatted_filename(self, filename):
-        """Takes a formatted filename (from this class) for an ARU birds audio file to load the dataHelper.
+        """Takes a formatted filename (from this class) for an STRIPS ARU audio file to load the dataHelper.
+
+        This input is friendly to inputs from older versions of this handler which don't include time data.
+
         """
 
         filename = Path(filename).name
@@ -74,6 +87,8 @@ class ARUDataHelper():
         self.month = self.date[4:6]
         self.day = self.date[6:8]
 
+        self.lat, self.lon = get_location(self.location)
+        
         try:
             self.time = split_filename[3].split('.')[0]
             self.hour = self.time[0:2]
@@ -98,8 +113,9 @@ class ARUDataHelper():
     def to_lab_path(self, root_directory):
         """Performs a search to find the path to the original location of a file with a formatted filename.
 
-        Requires the local lshulte-lab root directory to do perform the search, returns a path if one file is found,
-        a list of paths if more than one possible path is found, or None if no path is found.
+        Requires the local root directory to do perform the search, returns a path if one file is found,
+        a list of paths if more than one possible path is found (this should only happen if the input data 
+        is incomplete somehow), or None if no path is found.
         """
 
         if self.file_type == None:
@@ -128,4 +144,12 @@ class ARUDataHelper():
             return possible_paths
         
     def to_datetime(self):
-        return datetime(year = int(self.year), month = int(self.month), day = int(self.day))
+        return datetime(year = int(self.year), month = int(self.month), day = int(self.day), 
+                        hour= int(self.hour), minute = int(self.minute))
+
+    def get_lat(self):
+        return self.lat
+
+    def get_lon(self):
+        return self.lon
+

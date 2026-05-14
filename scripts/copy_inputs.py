@@ -3,9 +3,24 @@ from shutil import copy
 from ARU_DataHelper import ARUDataHelper
 import config
 import time
+from utilities.get_location import get_location_data
 
 ROOT = Path(config.LAB_DIRECTORY).resolve() # This string needs to be the address of the lschulte-lab directory
 DESTINATION = Path(config.INPUTS_DIRECTORY).resolve()
+
+def check_network():
+    networkOK = False
+
+    while not networkOK:
+        try:
+            networkOK = ROOT.exists()
+        except:
+            networkOK = False
+
+        if not networkOK:
+            print("Error: Lost connection to root directory, trying to reconnect..." ,end ="\r")
+            time.sleep(1)
+
 
 def get_bird_file_paths(root_directory = ROOT, location : str = None, location_type : str = None, 
                         year = None, month = None, day : int = None, file_type = None ):
@@ -46,7 +61,7 @@ def get_bird_file_paths(root_directory = ROOT, location : str = None, location_t
 
     return lab_directory.glob(glob_string) #"???/*/*"
 
-def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FILES, max_files = config.MAX_FILES):
+def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FILES, max_files = config.MAX_FILES) -> dict:
     """ Copies a number of files from a collection of paths to a destination folder.
 
     paths can be a path, string, generator, or collection.
@@ -59,6 +74,8 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FIL
     [location]_[location_type]_[yyyymmdd][filetype]
 
     ex: ARM_CTL_20180301.wav
+
+    Returns a collection of path : traceback pairs which suffered an error and failed to download.
     """
 
     destination = Path(destination)
@@ -67,23 +84,17 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FIL
     if not destination.is_dir():
         destination.mkdir()
 
+    # Create internal error log
+    error_log = {}
+
     # Handle single paths/strings
     if issubclass(type(paths), Path) or type(paths) is str:
         path = Path(paths)
 
         # Check network access
-        networkOK = False
+        check_network()
 
-        while not networkOK:
-            try:
-                networkOK = ROOT.exists()
-            except:
-                networkOK = False
-
-            if not networkOK:
-                print("Error: Lost connection to root directory, trying to reconnect..." ,end ="\r")
-                time.sleep(1)
-
+        # Download file
         if ".wav" in str(path) or ".flac" in str(path):
             print(f"Copying /{path.parent.parent.name + "/" + path.parent.name + "/" + path.name}", end = "\r")
 
@@ -100,6 +111,7 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FIL
 
             except Exception as e:
                print(f"Error {e} on {str(path)}")
+               error_log[path] = {e}
                 
             finally:
                 tempname.unlink(missing_ok=True)
@@ -118,20 +130,10 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FIL
             sleep_time = time.time()
             while max_files is not None and len(list(destination.glob("*.flac")) + list(destination.glob("*.wav"))) >= max_files :
                 time.sleep(1)
-                print(f"Downloader is sleeping...{round(time.time() - sleep_time)}", end = "\r")
+                print(f"Maximum number of files in directory, downloader is sleeping...{round(time.time() - sleep_time)}" + " "*5, end = "\r")
 
             # Check network access
-            networkOK = False
-
-            while not networkOK:
-                try:
-                    networkOK = ROOT.exists()
-                except:
-                    networkOK = False
-
-                if not networkOK:
-                    print("Error: Lost connection to root directory, trying to reconnect..." ,end ="\r")
-                    time.sleep(1)
+            check_network()
 
             # Download file
             if ".wav" in str(path) or ".flac" in str(path):
@@ -155,6 +157,7 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FIL
                     i += 1
                 except Exception as e:
                     print(f"Error {e} on {str(path)}")
+                    error_log[path] = {e}
 
                 finally:
                     tempname.unlink(missing_ok=True)
@@ -162,7 +165,9 @@ def copy_bird_audio(paths, destination = DESTINATION, num_files = config.NUM_FIL
             else:
                 print(f"Skipping {str(path)}, not a compatible audio file.")
 
-if __name__ == "__main__":
+    return error_log
 
+if __name__ == "__main__":
+    get_location_data()
     file_paths = get_bird_file_paths()
     copy_bird_audio(file_paths)
