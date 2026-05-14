@@ -11,6 +11,9 @@ DELETE_INPUTS = True
 DELETE_INDIVIDUAL_CSVS = False
 APPEND_TO_MASTER = True
 
+ARU_DEFAULT_COORDS = {'lat' : 42.0347, 'lon' : -93.6199} # Ames coordinates
+ARU_COORDS_ADDRESS = "ARU_data/Giese_occurrence_data/STRIPS_site_abbreviation_and_centroid.csv"
+
 # Weather filter thresholds (used by weather_filter.py)
 MAX_WIND_MPH = 20
 MAX_PRECIP_INCHES = 0.5

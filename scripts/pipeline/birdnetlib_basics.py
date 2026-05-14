@@ -23,14 +23,12 @@ def AnalyzeRecording(filename):
             dataHelper = ARUDataHelper()
             dataHelper.input_formatted_filename(filename)
 
-            #TODO - get longitude and latitude from file
-
             recording = Recording(
                 analyzer,
                 file_path,
                 min_conf=config.MIN_CONFIDENCE,
-                lat=42.0347,
-                lon=-93.6199,
+                lat= dataHelper.get_lat(),
+                lon= dataHelper.get_lon(),
                 date= dataHelper.to_datetime(),
             )
 
@@ -97,7 +95,7 @@ def runBirdNet():
                     print(f"Found {len(new_files_list)} new file(s) to process.")
                     
                     # Use multiprocessing to process files in parallel
-                    num_processes = min(multiprocessing.cpu_count(), len(new_files_list))
+                    num_processes = min(multiprocessing.cpu_count(), len(new_files_list), config.MAX_PROCESSES)
                     print(f"Processing {len(new_files_list)} files using {num_processes} processes.")
                     
                     with multiprocessing.Pool(processes=num_processes) as pool:
