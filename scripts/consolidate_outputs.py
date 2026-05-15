@@ -30,7 +30,7 @@ def consolidate_outputs(
     compiled_dir = Path(compiled_dir)
     compiled_dir.mkdir(parents=True, exist_ok=True)
 
-    master_csv = compiled_dir / "birdnet_master.csv"
+    master_csv = compiled_dir / "birdnet_master_10.csv"
 
     all_dfs = []
     csv_files = list(outputs_dir.glob("*.csv"))
@@ -64,10 +64,10 @@ def consolidate_outputs(
         df["recording_datetime"] = helper.to_datetime()
 
         # Optional confidence filter
-        #if min_confidence > 0 and "Confidence" in df.columns:
-        #    df = df[df["Confidence"] >= min_confidence]
-
-        all_dfs.append(df)
+        #if "Confidence" in df.columns and df["Confidence"] >= 0.10:
+            # Rows where 'Age' is greater than 30
+        filtered_df = df[df["confidence"] > 0.10]
+        all_dfs.append(filtered_df)
 
         #optionally delete individual CSVs after processing
         if config.DELETE_INDIVIDUAL_CSVS:
@@ -111,7 +111,7 @@ def consolidate_outputs(
 
 
 if __name__ == "__main__":
-    BASE_DIR = Path(__file__).absolute().parent.parent
+    BASE_DIR = Path(config.INPUTS_DIRECTORY).parent
 
     consolidate_outputs(
         outputs_dir=BASE_DIR / "outputs",
