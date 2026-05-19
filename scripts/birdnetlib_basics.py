@@ -30,6 +30,7 @@ def AnalyzeRecording(filename):
                 lat= dataHelper.get_lat(),
                 lon= dataHelper.get_lon(),
                 date= dataHelper.to_datetime(),
+                overlap=config.OVERLAP
             )
 
             recording.analyze()

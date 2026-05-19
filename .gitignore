@@ -1,5 +1,6 @@
 *.wav
 *.flac
+*.tmp
 *\__pycache__
 *\compiled
 config.py
